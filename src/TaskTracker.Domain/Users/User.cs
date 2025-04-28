@@ -6,19 +6,59 @@ using System.Threading.Tasks;
 using TaskTracker.Domain.Common;
 using TaskTracker.Domain.TaskComments;
 using TaskTracker.Domain.TaskParticipants;
+using TaskTracker.Domain.Users.Event;
 
 namespace TaskTracker.Domain.Users;
 
 public class User : Entity
 {
-    public string Email { get; set; }
-    public string PasswordHash { get; set; }
-    public Roles Role { get; set; } 
-    public DateTime CreatedAt { get; set; }
-    public int TeamId { get; set; }
+    private string _name;
+    private string _email;
+    private string _passwordHash;
+    private Roles _role;
+    private int _teamId;
+
+    public string Name => _name;
+    public string Email => _email;
+    public Roles Role => _role;
+    public int TeamId => _teamId;
+    public string PasswordHash => _passwordHash;
+    public DateTime CreatedAt { get; private init; }
 
     public List<Task> Tasks { get; set; } = new List<Task>();
 
     public ICollection<TaskComment> TaskComments { get; set; } = new HashSet<TaskComment>();
     public ICollection<TaskParticipant> ParticipatedTasks { get; set; } = new List<TaskParticipant>();
+
+    public static User Create(
+        string email
+        , string passwordHasher
+        , string name
+        , Roles roles = 0)
+    {
+        var user = new User()
+        {
+            CreatedAt = DateTime.Now,
+            _email = email,
+            _passwordHash = passwordHasher,
+            _name = name,
+            _role = roles      
+        };
+
+        user._domainEvents.Add(new CreateUserEvent(user));
+
+        return user;
+    } 
+    
+    public void LeaveTem()
+    {
+        _domainEvents.Add(new UserLeftTeamEvent(Id, _teamId));
+
+        _teamId = 0;
+    }
+
+    public void AddTeam(int teamId)
+    {
+        _teamId = teamId;
+    }
 }
