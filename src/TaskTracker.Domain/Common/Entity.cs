@@ -8,7 +8,7 @@ namespace TaskTracker.Domain.Common;
 
 public class Entity
 {
-    public int Id { get; init; }
+    public Guid Id { get; init; }
 
     protected readonly List<IDomainEvent> _domainEvents = [];
 

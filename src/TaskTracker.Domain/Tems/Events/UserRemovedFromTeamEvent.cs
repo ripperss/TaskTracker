@@ -9,11 +9,11 @@ namespace TaskTracker.Domain.Tems.Events;
 
 public class UserRemovedFromTeamEvent : IDomainEvent
 {
-    public int teamId { get; set; }
-    public int userId { get; set; }
-    public int managerId { get; set; }
+    public Guid teamId { get; set; }
+    public Guid userId { get; set; }
+    public Guid managerId { get; set; }
 
-    public UserRemovedFromTeamEvent(int teamId, int userId, int managerId)
+    public UserRemovedFromTeamEvent(Guid teamId, Guid userId, Guid managerId)
     {
         this.teamId = teamId;
         this.userId = userId;

@@ -11,9 +11,9 @@ namespace TaskTracker.Domain.Tems.Events;
 public class AddMembersOfTeamsEvent : IDomainEvent
 {
     public User User { get; set; }
-    public int UserId { get; set; }
+    public Guid UserId { get; set; }
 
-    public AddMembersOfTeamsEvent(User user, int userId)
+    public AddMembersOfTeamsEvent(User user, Guid userId)
     {
         User = user;
         UserId = userId;

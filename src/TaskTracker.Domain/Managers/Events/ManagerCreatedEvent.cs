@@ -9,11 +9,11 @@ namespace TaskTracker.Domain.Managers.Events;
 
 public class ManagerCreatedEvent : IDomainEvent
 {
-    public int userId { get; set; }
-    public int managerId { get; set; }
-    public int teamId { get; set; }
+    public Guid userId { get; set; }
+    public Guid managerId { get; set; }
+    public Guid teamId { get; set; }
 
-    public ManagerCreatedEvent(int userId, int managerId, int teamId)
+    public ManagerCreatedEvent(Guid userId, Guid managerId, Guid teamId)
     {
         this.userId = userId;
         this.managerId = managerId;

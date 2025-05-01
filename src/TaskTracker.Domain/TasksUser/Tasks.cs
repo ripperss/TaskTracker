@@ -18,8 +18,8 @@ public class Tasks : Entity
     public string Title { get; set; }
     public string Description { get; set; }
     public Status Status { get; private set; } 
-    public int? UserId { get; set; } 
-    public int TeamId { get; set; } 
+    public Guid? UserId { get; set; } 
+    public Guid TeamId { get; set; } 
     public DateTime CreatedAt { get; set; }
 
     public IReadOnlyCollection<TaskComment> Comments => _comments.AsReadOnly();
@@ -35,7 +35,8 @@ public class Tasks : Entity
             Title = title,
             Description = description,
             Status = Status.News,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            Id = Guid.NewGuid(),
         };
     }
 

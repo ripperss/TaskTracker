@@ -9,10 +9,10 @@ namespace TaskTracker.Domain.Users.Event;
 
 public class UserLeftTeamEvent : IDomainEvent
 {
-    public int userId { get; set; }
-    public int teamId { get; set; }
+    public Guid userId { get; set; }
+    public Guid teamId { get; set; }
 
-    public UserLeftTeamEvent(int userId, int teamId)
+    public UserLeftTeamEvent(Guid userId, Guid teamId)
     {
         this.userId = userId;
         this.teamId = teamId;

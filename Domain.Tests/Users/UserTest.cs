@@ -23,6 +23,7 @@ sealed public class UserTest
         user.Role.Should().Be(Roles.User);
         events.Should().HaveCount(1);
         ev.Should().NotBeNull();
+        user.Id.Should().NotBeEmpty();
 
     }
 
@@ -37,7 +38,7 @@ sealed public class UserTest
 
         // Assert
         userAction.Should().Throw<NoPermissionException>()
-            .WithMessage("you cannot create a user with administrator rights");
+            .WithMessage("you cannot create a user with administrator rights");    
     }
 
     [Fact]
@@ -63,7 +64,7 @@ sealed public class UserTest
         // Arrage 
         CreateUserFactory createUserFactory = new CreateUserFactory();
         var user = createUserFactory.CreateValidUser();
-        user.AddTeam(1);
+        user.AddTeam(Guid.NewGuid());
 
         // Act
         user.LeaveTem();
@@ -71,7 +72,7 @@ sealed public class UserTest
         var ev = events[1] as UserLeftTeamEvent;
 
         // Assert
-        user.TeamId.Should().Be(0);
+        user.TeamId.Should().Be(Guid.Empty);
         events.Should().NotBeEmpty();
         ev.Should().NotBeNull();
     }

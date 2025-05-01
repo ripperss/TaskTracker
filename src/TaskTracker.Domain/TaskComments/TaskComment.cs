@@ -6,13 +6,13 @@ namespace TaskTracker.Domain.TaskComments;
 
 public class TaskComment : Entity
 {
-    private int _taskId;
-    private int _userId;
+    private Guid _taskId;
+    private Guid _userId;
     private string _text;
     private DateTime _createdAt;
 
-    public int TaskId => _taskId;
-    public int UserId => _userId;
+    public Guid TaskId => _taskId;
+    public Guid UserId => _userId;
     public string Text => _text;
     public DateTime CreatedAt => _createdAt;
 

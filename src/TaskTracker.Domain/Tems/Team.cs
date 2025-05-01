@@ -11,13 +11,13 @@ public class Team : Entity
     private string _name;
     private DateTime _createdAt;
     private readonly List<User> _members = new();
-    private int _adminId { get; set; }
+    private Guid _adminId { get; set; }
     private string _teamPassword { get; set; }
 
     public string Name => _name;
     public DateTime CreatedAt => _createdAt;
     public string TeamPassword => _teamPassword;    
-    public int AdminId  => _adminId;
+    public Guid AdminId  => _adminId;
     public IReadOnlyCollection<User> Members => _members.AsReadOnly();
 
     private Team() { }
@@ -38,7 +38,8 @@ public class Team : Entity
             _name = name,
             _adminId = admin.Id,
             _createdAt = DateTime.UtcNow,
-            _teamPassword = teamPassword
+            _teamPassword = teamPassword,
+            Id = Guid.NewGuid()
         };
 
         team.AddMember(admin, teamPassword);
@@ -55,7 +56,7 @@ public class Team : Entity
         _domainEvents.Add(new AddMembersOfTeamsEvent(user, user.Id));
     }
 
-    public bool IsMember(int userId)
+    public bool IsMember(Guid userId)
     {
         return _members.Any(m => m.Id == userId);
     }
@@ -89,7 +90,7 @@ public class Team : Entity
             throw new IncorrectPasswordExcepton("password incorect");   
     }
 
-    private void RemoveValidateData(int initiorId, int teamId, User userToRemove)
+    private void RemoveValidateData(Guid initiorId, Guid teamId, User userToRemove)
     {
         if (teamId != Id)
             throw new NoPermissionException("No permission to remove this user");

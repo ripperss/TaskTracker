@@ -17,12 +17,12 @@ public class User : Entity
     private string _email;
     private string _passwordHash;
     private Roles _role;
-    private int _teamId;
+    private Guid _teamId;
 
     public string Name => _name;
     public string Email => _email;
     public Roles Role => _role;
-    public int TeamId => _teamId;
+    public Guid TeamId => _teamId;
     public string PasswordHash => _passwordHash;
     public DateTime CreatedAt { get; private init; }
 
@@ -46,7 +46,8 @@ public class User : Entity
             _email = email,
             _passwordHash = passwordHasher,
             _name = name,
-            _role = roles      
+            _role = roles,
+            Id = Guid.NewGuid()
         };
 
         user._domainEvents.Add(new CreateUserEvent(user));
@@ -56,17 +57,17 @@ public class User : Entity
     
     public void LeaveTem()
     {
-        if(TeamId == 0)
+        if(TeamId == Guid.Empty)
         {
             throw new Exception("the user is not a member of the team");
         }
         
         _domainEvents.Add(new UserLeftTeamEvent(Id, _teamId));
 
-        _teamId = 0;
+        _teamId = Guid.Empty;
     }
 
-    public void AddTeam(int teamId)
+    public void AddTeam(Guid teamId)
     {
         _teamId = teamId;
     }
