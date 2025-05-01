@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TaskTracker.Domain.Users;
+namespace Domain.Tests.Tems;
 
-public enum Roles
+public class TemTest
 {
-    User,
-    Manager,
-    Admin
+
 }

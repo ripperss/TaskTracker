@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TaskTracker.Domain.Common;
+﻿using TaskTracker.Domain.Common;
 using TaskTracker.Domain.Managers;
-using TaskTracker.Domain.TasksUser;
 using TaskTracker.Domain.Tems.Events;
 using TaskTracker.Domain.Tems.Exceptions;
 using TaskTracker.Domain.Users;
@@ -35,6 +29,9 @@ public class Team : Entity
 
         if (admin == null)
             throw new NullReferenceException("Admin is required");
+
+        if (admin.Role != Roles.Manager)
+            throw new NoPermissionException("Only users with the manager role can create teams.");
 
         var team = new Team
         {
@@ -68,6 +65,16 @@ public class Team : Entity
         RemoveValidateData(initiator.Id, Id, userToRemove);
 
         _domainEvents.Add(new UserRemovedFromTeamEvent(Id, userToRemove.Id, initiator.Id));
+    }
+
+    public void ApplyUserLeft(User user)
+    {
+        if(!_members.Contains(user))
+        {
+            throw new UserNotFoundException("the user not found");
+        }
+
+        _members.Remove(user);
     }
 
     private void AddValidateData(User user, string teamPassword)

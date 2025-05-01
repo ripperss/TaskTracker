@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TaskTracker.Domain.Common;
 using TaskTracker.Domain.TaskComments;
 using TaskTracker.Domain.TaskParticipants;
+using TaskTracker.Domain.Tems.Exceptions;
 using TaskTracker.Domain.Users.Event;
 
 namespace TaskTracker.Domain.Users;
@@ -36,6 +37,9 @@ public class User : Entity
         , string name
         , Roles roles = 0)
     {
+        if (roles == Roles.Admin)
+            throw new NoPermissionException("you cannot create a user with administrator rights");
+        
         var user = new User()
         {
             CreatedAt = DateTime.Now,
@@ -52,6 +56,11 @@ public class User : Entity
     
     public void LeaveTem()
     {
+        if(TeamId == 0)
+        {
+            throw new Exception("the user is not a member of the team");
+        }
+        
         _domainEvents.Add(new UserLeftTeamEvent(Id, _teamId));
 
         _teamId = 0;
