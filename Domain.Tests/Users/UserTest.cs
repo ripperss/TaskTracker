@@ -64,17 +64,15 @@ sealed public class UserTest
         // Arrage 
         CreateUserFactory createUserFactory = new CreateUserFactory();
         var user = createUserFactory.CreateValidUser();
-        user.AddTeam(Guid.NewGuid());
+        user.AddTeam(Guid.NewGuid(), "ff");
 
         // Act
-        user.LeaveTem();
+        user.LeaveTeam();
         var events = user.PopDomainEvents();
-        var ev = events[1] as UserLeftTeamEvent;
 
         // Assert
         user.TeamId.Should().Be(Guid.Empty);
         events.Should().NotBeEmpty();
-        ev.Should().NotBeNull();
     }
 
     [Fact]
@@ -82,10 +80,10 @@ sealed public class UserTest
     {
         // Arrage
         var createUserFactory = new CreateUserFactory();
-        var user = createUserFactory.CreateValidUser();
+        User user = createUserFactory.CreateValidUser();
 
         // Act
-        Action leaveTem = () => user.LeaveTem();
+        Action leaveTem = () => user.LeaveTeam();
 
         // Assert
         leaveTem.Should().Throw<Exception>().

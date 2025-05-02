@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using TaskTracker.Domain.Common;
 using TaskTracker.Domain.Managers.Events;
 using TaskTracker.Domain.Tems;
+using TaskTracker.Domain.Tems.Events;
 using TaskTracker.Domain.Tems.Exceptions;
 using TaskTracker.Domain.Users;
 
@@ -38,4 +39,15 @@ public class Manager : Entity
 
         return manager;
     }
+
+    public void RemoveMemberOfTeams(User user)
+    {
+        if ((user.Role == Roles.Manager || user.TeamId != TeamId))
+            throw new NoPermissionException("Not");
+
+        user.LeaveTeam();
+
+        _domainEvents.Add(new UserRemovedFromTeamEvent(TeamId, user.Id,UserId));
+    }
+    
 }

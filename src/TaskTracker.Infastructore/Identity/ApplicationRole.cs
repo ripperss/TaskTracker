@@ -2,7 +2,7 @@
 
 namespace TaskTracker.Infastructore.Identity;
 
-public class ApplicationRole : IdentityRole<int>
+public class ApplicationRole : IdentityRole<Guid>
 {
     public ApplicationRole() : base()
     {

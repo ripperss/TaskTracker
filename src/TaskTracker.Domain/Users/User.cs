@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using TaskTracker.Domain.Common;
 using TaskTracker.Domain.TaskComments;
 using TaskTracker.Domain.TaskParticipants;
+using TaskTracker.Domain.TasksUser;
+using TaskTracker.Domain.Tems.Events;
 using TaskTracker.Domain.Tems.Exceptions;
 using TaskTracker.Domain.Users.Event;
 
@@ -26,7 +28,7 @@ public class User : Entity
     public string PasswordHash => _passwordHash;
     public DateTime CreatedAt { get; private init; }
 
-    public List<Task> Tasks { get; set; } = new List<Task>();
+    public List<Tasks> Tasks { get; set; } = new List<Tasks>();
 
     public ICollection<TaskComment> TaskComments { get; set; } = new HashSet<TaskComment>();
     public ICollection<TaskParticipant> ParticipatedTasks { get; set; } = new List<TaskParticipant>();
@@ -55,7 +57,7 @@ public class User : Entity
         return user;
     } 
     
-    public void LeaveTem()
+    public void LeaveTeam()
     {
         if(TeamId == Guid.Empty)
         {
@@ -67,8 +69,10 @@ public class User : Entity
         _teamId = Guid.Empty;
     }
 
-    public void AddTeam(Guid teamId)
+    public void AddTeam(Guid teamId, string teamPassword)
     {
         _teamId = teamId;
+
+        _domainEvents.Add(new AddMembersOfTeamsEvent(this, teamId, teamPassword));
     }
 }

@@ -11,12 +11,14 @@ namespace TaskTracker.Domain.Tems.Events;
 public class AddMembersOfTeamsEvent : IDomainEvent
 {
     public User User { get; set; }
-    public Guid UserId { get; set; }
+    public Guid TeamId { get; set; }
+    public string TeamPassword { get; set; }
 
-    public AddMembersOfTeamsEvent(User user, Guid userId)
+    public AddMembersOfTeamsEvent(User user, Guid teamId, string teamPassword)
     {
         User = user;
-        UserId = userId;
+        TeamId = teamId;
+        TeamPassword = teamPassword;
     }
 
     public AddMembersOfTeamsEvent() { }

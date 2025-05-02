@@ -6,10 +6,13 @@ using TaskTracker.Domain.Users;
 using TaskTracker.Domain.TaskComments;
 using TaskTracker.Domain.TaskParticipants;
 using TaskTracker.Domain.Tems;
+using TaskTracker.Domain.Managers;
+using TaskTracker.Domain.TasksUser;
+using TaskTracker.Application.Common.Interfaces;
 
 namespace TaskTracker.Infastructore.Common.Persistence;
 
-public class TaskTrackerDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
+public class TaskTrackerDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>, IUnitOfWork
 {
     public TaskTrackerDbContext(DbContextOptions<TaskTrackerDbContext> options)
         : base(options)
@@ -20,6 +23,13 @@ public class TaskTrackerDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<TaskComment> TaskComments { get; set; }
     public DbSet<TaskParticipant> TaskParticipants { get; set; }
     public DbSet<Team> Teams { get; set; }
+    public DbSet<Manager> Managers { get; set; }
+    public DbSet<Tasks>  Tasks { get; set; }
+
+    public async Task CommitChangesAsync()
+    {
+        await SaveChangesAsync();
+    }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -30,7 +40,7 @@ public class TaskTrackerDbContext : IdentityDbContext<ApplicationUser, Applicati
         // Настройка Identity
         builder.Entity<ApplicationUser>(entity =>
         {
-            entity.ToTable("Users");
+            entity.ToTable("UsersApplication");
         });
 
         builder.Entity<ApplicationRole>(entity =>
@@ -38,27 +48,27 @@ public class TaskTrackerDbContext : IdentityDbContext<ApplicationUser, Applicati
             entity.ToTable("Roles");
         });
 
-        builder.Entity<IdentityUserRole<int>>(entity =>
+        builder.Entity<IdentityUserRole<Guid>>(entity =>
         {
             entity.ToTable("UserRoles");
         });
 
-        builder.Entity<IdentityUserClaim<int>>(entity =>
+        builder.Entity<IdentityUserClaim<Guid>>(entity =>
         {
             entity.ToTable("UserClaims");
         });
 
-        builder.Entity<IdentityUserLogin<int>>(entity =>
+        builder.Entity<IdentityUserLogin<Guid>>(entity =>
         {
             entity.ToTable("UserLogins");
         });
 
-        builder.Entity<IdentityRoleClaim<int>>(entity =>
+        builder.Entity<IdentityRoleClaim<Guid>>(entity =>
         {
             entity.ToTable("RoleClaims");
         });
 
-        builder.Entity<IdentityUserToken<int>>(entity =>
+        builder.Entity<IdentityUserToken<Guid>>(entity =>
         {
             entity.ToTable("UserTokens");
         });

@@ -42,18 +42,22 @@ public class Team : Entity
             Id = Guid.NewGuid()
         };
 
-        team.AddMember(admin, teamPassword);
+        team._members.Add(admin);
+
         return team;
 
     }
 
     public void AddMember(User user, string teamPassword)
     {
+        if(_members.Contains(user))
+        {
+            return;
+        }
+
         AddValidateData(user, teamPassword);
 
         _members.Add(user);
-
-        _domainEvents.Add(new AddMembersOfTeamsEvent(user, user.Id));
     }
 
     public bool IsMember(Guid userId)
@@ -61,25 +65,18 @@ public class Team : Entity
         return _members.Any(m => m.Id == userId);
     }
 
-    public void RemoveMember(User userToRemove, Manager initiator)
+    public void RemoveMember(User userToRemove)
     {
-        RemoveValidateData(initiator.Id, Id, userToRemove);
+        RemoveValidateData(Id, userToRemove);
 
-        _domainEvents.Add(new UserRemovedFromTeamEvent(Id, userToRemove.Id, initiator.Id));
-    }
-
-    public void ApplyUserLeft(User user)
-    {
-        if(!_members.Contains(user))
-        {
-            throw new UserNotFoundException("the user not found");
-        }
-
-        _members.Remove(user);
+        _members.Remove(userToRemove);
     }
 
     private void AddValidateData(User user, string teamPassword)
     {
+        if (user.Role == Roles.Manager)
+            throw new NoPermissionException("the manager cannot add himself to another team");
+
         if (_members.Any(m => m.Id == user.Id))
             throw new UserAlreadyExists("User is already in the team");
 
@@ -90,7 +87,7 @@ public class Team : Entity
             throw new IncorrectPasswordExcepton("password incorect");   
     }
 
-    private void RemoveValidateData(Guid initiorId, Guid teamId, User userToRemove)
+    private void RemoveValidateData(Guid teamId, User userToRemove)
     {
         if (teamId != Id)
             throw new NoPermissionException("No permission to remove this user");
@@ -98,7 +95,7 @@ public class Team : Entity
         if (userToRemove.Id == _adminId)
             throw new NoPermissionException("Cannot remove team admin");
 
-        if (!_members.Remove(userToRemove))
+        if (!_members.Contains(userToRemove))
             throw new UserAlreadyExists("User not found in team");
     }
 }
