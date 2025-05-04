@@ -9,6 +9,7 @@ namespace Domain.Tests.Tems;
 public class TeamTest
 {
     private readonly CreateUserFactory _createUserFactory = new CreateUserFactory();
+    private readonly string _identityUserId = Guid.NewGuid().ToString();
 
     [Theory]
     [InlineData("ggg", "Ggg")]
@@ -16,7 +17,7 @@ public class TeamTest
     public void CreateTeam_WithValidData_ShouldCreateTeam(string name, string teamPassword)
     {
         // Arrage 
-        var user = _createUserFactory.CreateUserWithRoleManager();
+        var user = _createUserFactory.CreateUserWithRoleManager(_identityUserId);
         
         // Act
         var team  = Team.Create(name, teamPassword, user);
@@ -34,7 +35,7 @@ public class TeamTest
     public void CreateTeam_WhenInvalidData_ShouldException(string name, string teamPassword)
     {
         // Arrage
-        var user = _createUserFactory.CreateUserWithRoleManager();
+        var user = _createUserFactory.CreateUserWithRoleManager(_identityUserId);
 
         // Act
         var team = () => Team.Create(name, teamPassword, user);    
@@ -47,7 +48,7 @@ public class TeamTest
     public void CreateTeam_WhenInCorrectRole_ShouldException()
     {
         // Arrage
-        var user = _createUserFactory.CreateValidUser();
+        var user = _createUserFactory.CreateValidUser(_identityUserId);
 
         // Act
         var team = () => Team.Create("f", "f", user);
@@ -61,7 +62,7 @@ public class TeamTest
     public void AddMembers_WhenValidPassword_ShouldEmpty()
     {
         // Arrage
-        var user = _createUserFactory.CreateUserWithRoleManager();
+        var user = _createUserFactory.CreateUserWithRoleManager(_identityUserId);
         var team = Team.Create("name", "password", user);
 
         // Act
@@ -76,9 +77,9 @@ public class TeamTest
     public void AddMembers_WhenInValidPassword_ShouldException()
     {
         // Arrage
-        var admin = _createUserFactory.CreateUserWithRoleManager();
+        var admin = _createUserFactory.CreateUserWithRoleManager(_identityUserId);
         var team = Team.Create("name", "password", admin);
-        var user = _createUserFactory.CreateValidUser();
+        var user = _createUserFactory.CreateValidUser(_identityUserId);
 
         // Act
         Action tramAddAction = () => team.AddMember(user, "InConrrectpassword");
@@ -91,9 +92,9 @@ public class TeamTest
     public void RemoveMember_WhenValidData_ShouldEmpty()
     {
         // Arrage
-        var admin = _createUserFactory.CreateUserWithRoleManager();
+        var admin = _createUserFactory.CreateUserWithRoleManager(_identityUserId);
         var team = Team.Create("name", "password", admin);
-        var user = _createUserFactory.CreateValidUser();
+        var user = _createUserFactory.CreateValidUser(_identityUserId);
         team.AddMember(user, "password");
 
         // Act
@@ -108,7 +109,7 @@ public class TeamTest
     public void RemoveMember_whenUsereQuealManager_ShouldException()
     {
         // Arrage
-        var admin = _createUserFactory.CreateUserWithRoleManager();
+        var admin = _createUserFactory.CreateUserWithRoleManager(_identityUserId);
         var team = Team.Create("name", "password", admin);
 
         // Act

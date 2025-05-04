@@ -10,5 +10,5 @@ namespace TaskTracker.Application.Common.Interfaces;
 
 public interface IJwtTokenGeneration
 {
-    string GenerationJwtToken(User user);
+    Task<string> GenerationJwtToken(User user);
 }

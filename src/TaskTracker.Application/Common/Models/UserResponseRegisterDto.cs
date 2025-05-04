@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TaskTracker.Infastructore.Identity
+namespace TaskTracker.Application.Common.Models;
+
+public class UserResponseRegisterDto
 {
-    internal class UserRepository
-    {
-    }
 }
