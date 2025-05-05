@@ -19,9 +19,9 @@ public class UserRepository : IUserRepository
 
     public async Task<User> CreateUserAsync(User user)
     {
-        var Dbuser = _dbContext.Users.FirstOrDefaultAsync(us => us.Name == user.Name);
+        var Dbuser = await _dbContext.Users.FirstOrDefaultAsync(us => us.Name == user.Name);
         if (Dbuser != null)
-            throw new UserAlreadyExists(user.Name);
+            throw new UserNotFoundException(user.Name);
 
         await _dbContext.Users.AddAsync(user);
 

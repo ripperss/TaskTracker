@@ -8,6 +8,8 @@ using TaskTracker.Application.Common.Models;
 
 namespace TaskTracker.Application.Auth.Commands.Register;
 
-public record UserRegisterCommand(string Name, string Email, string Password) : IRequest<UserResponseRegisterDto>
-{
-}
+public record UserRegisterCommand(
+    string FirstName
+    , string LastName
+    , string Email
+    , string Password) : IRequest<UserResponseRegisterDto>;
