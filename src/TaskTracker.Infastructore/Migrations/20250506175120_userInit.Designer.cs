@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TaskTracker.Infastructore.Common.Persistence;
 
@@ -11,9 +12,11 @@ using TaskTracker.Infastructore.Common.Persistence;
 namespace TaskTracker.Infastructore.Migrations
 {
     [DbContext(typeof(TaskTrackerDbContext))]
-    partial class TaskTrackerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250506175120_userInit")]
+    partial class userInit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

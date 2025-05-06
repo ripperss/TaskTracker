@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TaskTracker.Domain.Common;
+﻿using TaskTracker.Domain.Common;
 using TaskTracker.Domain.TaskComments;
 using TaskTracker.Domain.TaskParticipants;
 using TaskTracker.Domain.TasksUser;
@@ -19,6 +14,8 @@ public class User : Entity
     private Roles _role;
     private Guid _teamId;
     private string _identityUserId;
+
+    protected User() { }
 
     public string IdentityUserId => _identityUserId;
     public string Name => _name;

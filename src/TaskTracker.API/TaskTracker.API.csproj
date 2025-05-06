@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="8.2.0" />
     <PackageReference Include="MediatR" Version="12.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3" />
@@ -20,12 +21,18 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="8.1.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\TaskTracker.Application\TaskTracker.Application.csproj" />
     <ProjectReference Include="..\TaskTracker.Domain\TaskTracker.Domain.csproj" />
     <ProjectReference Include="..\TaskTracker.Infastructore\TaskTracker.Infastructore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

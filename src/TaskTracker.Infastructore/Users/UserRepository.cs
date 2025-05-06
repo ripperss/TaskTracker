@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using System;
-using System.Data.Entity;
+﻿
+using Microsoft.EntityFrameworkCore;
 using TaskTracker.Application.Common.Interfaces;
 using TaskTracker.Domain.Tems.Exceptions;
 using TaskTracker.Domain.Users;
@@ -19,11 +18,7 @@ public class UserRepository : IUserRepository
 
     public async Task<User> CreateUserAsync(User user)
     {
-        var Dbuser = await _dbContext.Users.FirstOrDefaultAsync(us => us.Name == user.Name);
-        if (Dbuser != null)
-            throw new UserNotFoundException(user.Name);
-
-        await _dbContext.Users.AddAsync(user);
+        await _dbContext.DomainUsers.AddAsync(user);
 
         return user; 
     }
@@ -34,19 +29,19 @@ public class UserRepository : IUserRepository
 
         user.Delete();
 
-        _dbContext.Users.Remove(user);
+        _dbContext.DomainUsers.Remove(user);
     }
 
     public async Task<IEnumerable<User>> GetAllAsync()
     {
-        var users = await _dbContext.Users.ToListAsync();
+        var users = await _dbContext.DomainUsers.ToListAsync();
 
         return users;
     }
 
     public async Task<User> GetByIdAsync(Guid id)
     {
-        var user = await _dbContext.Users.FirstOrDefaultAsync(us => us.Id == id);
+        var user = await _dbContext.DomainUsers.FirstOrDefaultAsync(us => us.Id == id);
 
         if (user == null)
             throw new UserNotFoundException("the user was not found");
@@ -56,7 +51,7 @@ public class UserRepository : IUserRepository
 
     public async Task<User> GetByIdentityIdAsync(string id)
     {
-        var user = await _dbContext.Users.FirstOrDefaultAsync(us => us.IdentityUserId == id);
+        var user = await _dbContext.DomainUsers.FirstOrDefaultAsync(us => us.IdentityUserId == id);
 
         if (user == null)
             throw new UserAlreadyExists("the user was not found");

@@ -19,7 +19,7 @@ public class TaskTrackerDbContext : IdentityDbContext<ApplicationUser, Applicati
     {
     }
 
-    public DbSet<User> Users { get; set; }
+    public DbSet<User> DomainUsers { get; set; }
     public DbSet<TaskComment> TaskComments { get; set; }
     public DbSet<TaskParticipant> TaskParticipants { get; set; }
     public DbSet<Team> Teams { get; set; }

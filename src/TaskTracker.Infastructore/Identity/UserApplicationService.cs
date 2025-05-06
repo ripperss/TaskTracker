@@ -17,8 +17,8 @@ public class UserApplicationService : IUserApplicationService
 
     public async Task<UserResponseRegisterDto> RegisterAsync(UserRegisterCommand dto)
     {
-        var findUserByEmail = _userManager.FindByEmailAsync(dto.Email);
-        var findUserByName = _userManager.FindByNameAsync(dto.FirstName);
+        var findUserByEmail = await _userManager.FindByEmailAsync(dto.Email);
+        var findUserByName = await _userManager.FindByNameAsync(dto.FirstName);
 
         if (findUserByEmail != null || findUserByName != null)
             throw new UserAlreadyExists("пользователь с данным Email или именем уже есть ");
