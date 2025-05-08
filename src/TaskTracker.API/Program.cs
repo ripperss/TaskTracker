@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TaskTracker.API.Extensions;
-
+using TaskTracker.API.Middlewares;
 using TaskTracker.Infastructore.Common.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,25 +24,13 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<TaskTrackerDbContext>();
-    try
-    {
-        dbContext.Database.Migrate();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($": {ex.Message}");
-        throw;
-    }
-}
-
 app.UseAuthorization();
 
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.MapControllers();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.Run();

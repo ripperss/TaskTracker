@@ -32,7 +32,7 @@ public class JwtTokenGeneration : IJwtTokenGeneration
 
         var tokenDescriptor = new SecurityTokenDescriptor()
         {
-            Subject = await GenerationClaims(user),
+            Subject =  GenerationClaims(user),
             Expires = expires,
             SigningCredentials = credentials
         };
@@ -43,12 +43,11 @@ public class JwtTokenGeneration : IJwtTokenGeneration
     }
 
 
-    private async Task<ClaimsIdentity> GenerationClaims(User user)
+    private ClaimsIdentity GenerationClaims(User user)
     {
         var claims = new List<Claim>()
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.Name),
+            new Claim(ClaimTypes.NameIdentifier, user.IdentityUserId.ToString()),
             new Claim(ClaimTypes.Role, user.Role.ToString())
         };
 

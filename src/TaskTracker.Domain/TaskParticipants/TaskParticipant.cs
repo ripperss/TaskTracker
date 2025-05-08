@@ -11,11 +11,24 @@ namespace TaskTracker.Domain.TaskParticipants;
 
 public class TaskParticipant : Entity
 {
-    public Guid  TaskId { get; set; }
-    public Tasks Task { get; set; }
+    public Guid  TaskId { get; private set; }
+    public Tasks Task { get; private set; }
 
-    public Guid UserId { get; set; }
-    public User User { get; set; }
+    public Guid UserId { get; private set; }
+    public User User { get; private set; }
 
-    public DateTime JoinedAt { get; set; } = DateTime.UtcNow;
+    public DateTime JoinedAt { get;  private  init; } = DateTime.UtcNow;
+
+    public static TaskParticipant Create(Tasks task, User user)
+    {
+        var TaskParticipant = new TaskParticipant()
+        {
+            Task = task,
+            User = user,
+            TaskId = task.Id,
+            UserId = user.Id,
+        };
+
+        return TaskParticipant;
+    }
 }

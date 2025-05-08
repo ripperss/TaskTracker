@@ -12,21 +12,21 @@ public class CreateUserFactory
 {
     public User CreateValidUser(string identityUserId)
     {
-        var user = User.Create("fffff", identityUserId,Roles.User);
+        var user = User.Create(identityUserId,Roles.User);
 
         return user;
     }
 
     public User CreateInvalidUser(string identityUserId)
     {
-        var user = User.Create("fffff", identityUserId, Roles.Admin);
+        var user = User.Create(identityUserId, Roles.Admin);
 
         return user;
     }
 
     public User CreateUserWithRoleManager(string identityUserId)
     {
-        var user = User.Create("fffff", identityUserId, Roles.Manager);
+        var user = User.Create(identityUserId, Roles.Manager);
 
         return user;
     }

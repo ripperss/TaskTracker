@@ -11,4 +11,7 @@ namespace TaskTracker.Application.Common.Interfaces;
 public interface IUserApplicationService
 {
     Task<UserResponseRegisterDto> RegisterAsync(UserRegisterCommand dto);
+    public Task<UserDto> GetUserByEmailAsync(string email);
+    public Task EnsurePasswordIsCorrectAsync(string email, string inputPassword);
+    public Task<UserDto> GetUserByIdAsync(string userId);
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TaskTracker.Infastructore.Migrations
 {
     /// <inheritdoc />
-    public partial class initIdentity : Migration
+    public partial class ChangeDomainUser : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -29,7 +29,11 @@ namespace TaskTracker.Infastructore.Migrations
                 name: "Teams",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TeamPassword = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AdminId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -43,9 +47,10 @@ namespace TaskTracker.Infastructore.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -85,19 +90,21 @@ namespace TaskTracker.Infastructore.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "DomainUsers",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TeamId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    Role = table.Column<int>(type: "int", nullable: false),
+                    TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IdentityUserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_DomainUsers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Users_Teams_TeamId1",
-                        column: x => x.TeamId1,
+                        name: "FK_DomainUsers_Teams_TeamId",
+                        column: x => x.TeamId,
                         principalTable: "Teams",
                         principalColumn: "Id");
                 });
@@ -199,15 +206,15 @@ namespace TaskTracker.Infastructore.Migrations
                 {
                     table.PrimaryKey("PK_Managers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Managers_Teams_TeamId",
-                        column: x => x.TeamId,
-                        principalTable: "Teams",
+                        name: "FK_Managers_DomainUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "DomainUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Managers_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
+                        name: "FK_Managers_Teams_TeamId",
+                        column: x => x.TeamId,
+                        principalTable: "Teams",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -228,9 +235,9 @@ namespace TaskTracker.Infastructore.Migrations
                 {
                     table.PrimaryKey("PK_Tasks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tasks_Users_UserId",
+                        name: "FK_Tasks_DomainUsers_UserId",
                         column: x => x.UserId,
-                        principalTable: "Users",
+                        principalTable: "DomainUsers",
                         principalColumn: "Id");
                 });
 
@@ -239,22 +246,24 @@ namespace TaskTracker.Infastructore.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TaskId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    TaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TaskComments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TaskComments_Tasks_TaskId1",
-                        column: x => x.TaskId1,
-                        principalTable: "Tasks",
+                        name: "FK_TaskComments_DomainUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "DomainUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TaskComments_Users_UserId1",
-                        column: x => x.UserId1,
-                        principalTable: "Users",
+                        name: "FK_TaskComments_Tasks_TaskId",
+                        column: x => x.TaskId,
+                        principalTable: "Tasks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -272,18 +281,23 @@ namespace TaskTracker.Infastructore.Migrations
                 {
                     table.PrimaryKey("PK_TaskParticipants", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_TaskParticipants_DomainUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "DomainUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_TaskParticipants_Tasks_TaskId",
                         column: x => x.TaskId,
                         principalTable: "Tasks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TaskParticipants_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DomainUsers_TeamId",
+                table: "DomainUsers",
+                column: "TeamId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Managers_TeamId",
@@ -308,14 +322,14 @@ namespace TaskTracker.Infastructore.Migrations
                 filter: "[NormalizedName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TaskComments_TaskId1",
+                name: "IX_TaskComments_TaskId",
                 table: "TaskComments",
-                column: "TaskId1");
+                column: "TaskId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TaskComments_UserId1",
+                name: "IX_TaskComments_UserId",
                 table: "TaskComments",
-                column: "UserId1");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TaskParticipants_TaskId",
@@ -346,11 +360,6 @@ namespace TaskTracker.Infastructore.Migrations
                 name: "IX_UserRoles_RoleId",
                 table: "UserRoles",
                 column: "RoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_TeamId1",
-                table: "Users",
-                column: "TeamId1");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
@@ -402,7 +411,7 @@ namespace TaskTracker.Infastructore.Migrations
                 name: "UsersApplication");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "DomainUsers");
 
             migrationBuilder.DropTable(
                 name: "Teams");

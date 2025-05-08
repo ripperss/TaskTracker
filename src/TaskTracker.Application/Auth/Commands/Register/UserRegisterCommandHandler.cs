@@ -31,7 +31,7 @@ public class UserRegisterCommandHandler : IRequestHandler<UserRegisterCommand, U
         var identityUser = await _userApplicationService.RegisterAsync(request);
         identityUser.Role = Roles.User;
 
-        var user = User.Create(request.FirstName, identityUser.UserIdentityId, Roles.User);
+        var user = User.Create(identityUser.UserIdentityId, Roles.User);
         await _userRepository.CreateUserAsync(user);
 
         await _unitOfWork.CommitChangesAsync();

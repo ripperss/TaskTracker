@@ -72,5 +72,6 @@ public class TaskTrackerDbContext : IdentityDbContext<ApplicationUser, Applicati
         {
             entity.ToTable("UserTokens");
         });
+
     }
 }

@@ -47,7 +47,7 @@ public class RegisterUserCommandTest
             .Setup(x => x.RegisterAsync(request))
             .ReturnsAsync(identityResponse);
 
-        var user = User.Create("ff", "123", Roles.User);
+        var user = User.Create("123", Roles.User);
         _userRepositoryMock
             .Setup(x => x.CreateUserAsync(user))
             .Returns(Task.FromResult(user));
