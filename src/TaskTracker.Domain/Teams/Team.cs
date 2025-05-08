@@ -8,16 +8,12 @@ namespace TaskTracker.Domain.Tems;
 
 public class Team : Entity
 {
-    private string _name;
-    private DateTime _createdAt;
     private readonly List<User> _members = new();
-    private Guid _adminId { get; set; }
-    private string _teamPassword { get; set; }
 
-    public string Name => _name;
-    public DateTime CreatedAt => _createdAt;
-    public string TeamPassword => _teamPassword;    
-    public Guid AdminId  => _adminId;
+    public string Name {  get; private set; }
+    public DateTime CreatedAt {  get; private set; }
+    public string TeamPassword {  get; private set; } 
+    public Guid AdminId {  get; private set; }
     public IReadOnlyCollection<User> Members => _members.AsReadOnly();
 
     private Team() { }
@@ -35,10 +31,10 @@ public class Team : Entity
 
         var team = new Team
         {
-            _name = name,
-            _adminId = admin.Id,
-            _createdAt = DateTime.UtcNow,
-            _teamPassword = teamPassword,
+            Name = name,
+            AdminId = admin.Id,
+            CreatedAt = DateTime.UtcNow,
+            TeamPassword = teamPassword,
             Id = Guid.NewGuid()
         };
 
@@ -83,7 +79,7 @@ public class Team : Entity
         if (teamPassword == null)
             throw new NullReferenceException("the password cannot be Null");
 
-        if (teamPassword != _teamPassword)
+        if (teamPassword != TeamPassword)
             throw new IncorrectPasswordExcepton("password incorect");   
     }
 
@@ -92,7 +88,7 @@ public class Team : Entity
         if (teamId != Id)
             throw new NoPermissionException("No permission to remove this user");
 
-        if (userToRemove.Id == _adminId)
+        if (userToRemove.Id == AdminId)
             throw new NoPermissionException("Cannot remove team admin");
 
         if (!_members.Contains(userToRemove))

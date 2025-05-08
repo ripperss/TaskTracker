@@ -11,9 +11,9 @@ public class DeleteUserEvent : IDomainEvent
 {
     public string IdentityId { get; set; }
     public Guid UserId { get; set; }
-    public Guid TeamId { get; set; }
+    public Guid? TeamId { get; set; }
 
-    public DeleteUserEvent(Guid userId, Guid teamId, string identityId)
+    public DeleteUserEvent(Guid userId, Guid? teamId, string identityId)
     {
         IdentityId = identityId;
         UserId = userId;

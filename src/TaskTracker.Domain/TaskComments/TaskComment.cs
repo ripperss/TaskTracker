@@ -6,20 +6,15 @@ namespace TaskTracker.Domain.TaskComments;
 
 public class TaskComment : Entity
 {
-    private Guid _taskId;
-    private Guid _userId;
-    private string _text;
-    private DateTime _createdAt;
-
-    public Guid TaskId => _taskId;
-    public Guid UserId => _userId;
-    public string Text => _text;
-    public DateTime CreatedAt => _createdAt;
+    public Guid TaskId { get; private set; }
+    public Guid UserId { get; private set; }
+    public string Text { get; private set; }
+    public DateTime CreatedAt { get; private set; }
 
     public Tasks Task { get; private set; } 
     public User User { get; private set; }
 
-    private TaskComment() { }
+    protected TaskComment() { }
 
     public static TaskComment Create(
         Tasks task,
@@ -40,10 +35,10 @@ public class TaskComment : Entity
 
         return new TaskComment
         {
-            _taskId = task.Id,
-            _userId = author.Id,
-            _text = text,
-            _createdAt = DateTime.UtcNow,
+            TaskId = task.Id,
+            UserId = author.Id,
+            Text = text,
+            CreatedAt = DateTime.UtcNow,
             Task = task,
             User = author
         };
@@ -51,12 +46,12 @@ public class TaskComment : Entity
 
     public void UpdateText(string newText, User editor)
     {
-        if (editor.Id != _userId && editor.Role != Roles.Manager)
+        if (editor.Id != UserId && editor.Role != Roles.Manager)
             throw new Exception("Only author can edit the comment");
 
         if (string.IsNullOrWhiteSpace(newText))
             throw new Exception("Text cannot be empty");
 
-        _text = newText;
+        Text = newText;
     }
 }

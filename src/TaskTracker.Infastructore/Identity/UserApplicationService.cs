@@ -3,6 +3,7 @@ using TaskTracker.Application.Auth.Commands.Register;
 using TaskTracker.Application.Common.Interfaces;
 using TaskTracker.Application.Common.Models;
 using TaskTracker.Domain.Tems.Exceptions;
+using TaskTracker.Infastructore.Exceptions;
 
 namespace TaskTracker.Infastructore.Identity;
 
@@ -47,5 +48,51 @@ public class UserApplicationService : IUserApplicationService
         };
     }
 
-    
+    public async Task<UserDto> GetUserByEmailAsync(string email)
+    {
+        ApplicationUser user = await _userManager.FindByEmailAsync(email)
+            ?? throw new NotFoundUserBtEmailException("the user with this email was not found");
+
+        var userDto = new UserDto
+        {
+            Email = email,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            UserIdentityId = user.Id.ToString(),
+
+        };
+
+        return userDto;
+    }
+
+    public async Task EnsurePasswordIsCorrectAsync(string email, string inputPassword )
+    {
+        ApplicationUser user = await _userManager.FindByEmailAsync(email)
+            ?? throw new NotFoundUserBtEmailException("the user with this email was not found");
+
+        var result = await  _userManager.CheckPasswordAsync(user, inputPassword);
+
+        if (result == false)
+        {
+            throw new Exception("пароль не верен");
+        }
+    }
+
+    public async Task<UserDto> GetUserByIdAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId)
+            ?? throw new Exception();
+
+        var userDto = new UserDto
+        {
+            Email = user.Email,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+        };
+
+        return userDto;
+    } 
+
+
+
 }

@@ -2,7 +2,6 @@
 using TaskTracker.Domain.Common;
 using TaskTracker.Domain.TaskComments;
 using TaskTracker.Domain.TaskParticipants;
-using TaskTracker.Domain.TasksUser;
 using TaskTracker.Domain.Tems;
 using TaskTracker.Domain.Users;
 
@@ -13,14 +12,12 @@ public class Tasks : Entity
     private readonly List<TaskComment> _comments = new();
     private readonly List<TaskParticipant> _participants = new();
 
-    private Status _status;
-
-    public string Title { get; set; }
-    public string Description { get; set; }
+    public string Title { get; private set; }
+    public string Description { get; private set; }
     public Status Status { get; private set; } 
-    public Guid? UserId { get; set; } 
-    public Guid TeamId { get; set; } 
-    public DateTime CreatedAt { get; set; }
+    public Guid? UserId { get; private set; } 
+    public Guid TeamId { get; private set; } 
+    public DateTime CreatedAt { get; private set; }
 
     public IReadOnlyCollection<TaskComment> Comments => _comments.AsReadOnly();
     public IReadOnlyCollection<TaskParticipant> Participants => _participants.AsReadOnly();
@@ -37,6 +34,7 @@ public class Tasks : Entity
             Status = Status.News,
             CreatedAt = DateTime.UtcNow,
             Id = Guid.NewGuid(),
+            UserId = creator.Id,
         };
     }
 
@@ -60,9 +58,9 @@ public class Tasks : Entity
         if (!team.IsMember(user.Id))
             throw new Exception("User is not in the team");
 
-        if (_status == Status.Completed)
+        if (Status == Status.Completed)
             throw new Exception("Cannot assign completed tasks");
 
-        _participants.Add(new TaskParticipant() { Id = user.Id, TaskId = this.Id, Task = this, User = user});
+        _participants.Add(TaskParticipant.Create(this, user));
     }
 }

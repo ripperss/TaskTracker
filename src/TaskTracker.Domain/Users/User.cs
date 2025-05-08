@@ -1,6 +1,4 @@
 ﻿using TaskTracker.Domain.Common;
-using TaskTracker.Domain.TaskComments;
-using TaskTracker.Domain.TaskParticipants;
 using TaskTracker.Domain.TasksUser;
 using TaskTracker.Domain.Tems.Events;
 using TaskTracker.Domain.Tems.Exceptions;
@@ -10,27 +8,17 @@ namespace TaskTracker.Domain.Users;
 
 public class User : Entity
 {
-    private string _name;
-    private Roles _role;
-    private Guid _teamId;
-    private string _identityUserId;
-
-    protected User() { }
-
-    public string IdentityUserId => _identityUserId;
-    public string Name => _name;
-    public Roles Role => _role;
-    public Guid TeamId => _teamId;
+    public Roles Role { get; private set; }
+    public Guid? TeamId { get; private set; }
+    public string IdentityUserId { get; private set; }
     public DateTime CreatedAt { get; private init; }
 
     public List<Tasks> Tasks { get; set; } = new List<Tasks>();
 
-    public ICollection<TaskComment> TaskComments { get; set; } = new HashSet<TaskComment>();
-    public ICollection<TaskParticipant> ParticipatedTasks { get; set; } = new List<TaskParticipant>();
+    protected User() { }
 
     public static User Create(
-         string name
-        , string identityUserId
+          string identityUserId
         , Roles roles = 0)
     {
         if (roles == Roles.Admin)
@@ -39,10 +27,9 @@ public class User : Entity
         var user = new User()
         {
             CreatedAt = DateTime.Now,
-            _name = name,
-            _role = roles,
+            Role = roles,
             Id = Guid.NewGuid(),
-            _identityUserId = identityUserId
+            IdentityUserId = identityUserId
         };
 
         user._domainEvents.Add(new CreateUserEvent(user));
@@ -52,19 +39,19 @@ public class User : Entity
 
     public void LeaveTeam()
     {
-        if (TeamId == Guid.Empty)
+        if (TeamId == Guid.Empty || TeamId == null)
         {
             throw new Exception("the user is not a member of the team");
         }
 
-        _domainEvents.Add(new UserLeftTeamEvent(Id, _teamId));
+        _domainEvents.Add(new UserLeftTeamEvent(Id, TeamId));
 
-        _teamId = Guid.Empty;
+        TeamId = Guid.Empty;
     }
 
     public void AddTeam(Guid teamId, string teamPassword)
     {
-        _teamId = teamId;
+        TeamId = teamId;
 
         _domainEvents.Add(new AddMembersOfTeamsEvent(this, teamId, teamPassword));
     }

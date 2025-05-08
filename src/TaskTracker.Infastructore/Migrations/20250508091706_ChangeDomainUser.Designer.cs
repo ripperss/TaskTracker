@@ -12,8 +12,8 @@ using TaskTracker.Infastructore.Common.Persistence;
 namespace TaskTracker.Infastructore.Migrations
 {
     [DbContext(typeof(TaskTrackerDbContext))]
-    [Migration("20250504102448_UpdateUser")]
-    partial class UpdateUser
+    [Migration("20250508091706_ChangeDomainUser")]
+    partial class ChangeDomainUser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -155,17 +155,24 @@ namespace TaskTracker.Infastructore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("TaskId1")
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("TaskId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("UserId1")
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TaskId1");
+                    b.HasIndex("TaskId");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("TaskComments");
                 });
@@ -233,6 +240,20 @@ namespace TaskTracker.Infastructore.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("AdminId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TeamPassword")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Teams");
@@ -247,14 +268,21 @@ namespace TaskTracker.Infastructore.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("TeamId1")
+                    b.Property<string>("IdentityUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TeamId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TeamId1");
+                    b.HasIndex("TeamId");
 
-                    b.ToTable("Users");
+                    b.ToTable("DomainUsers");
                 });
 
             modelBuilder.Entity("TaskTracker.Infastructore.Identity.ApplicationRole", b =>
@@ -434,13 +462,13 @@ namespace TaskTracker.Infastructore.Migrations
                 {
                     b.HasOne("TaskTracker.Domain.TasksUser.Tasks", "Task")
                         .WithMany("Comments")
-                        .HasForeignKey("TaskId1")
+                        .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("TaskTracker.Domain.Users.User", "User")
-                        .WithMany("TaskComments")
-                        .HasForeignKey("UserId1")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -458,7 +486,7 @@ namespace TaskTracker.Infastructore.Migrations
                         .IsRequired();
 
                     b.HasOne("TaskTracker.Domain.Users.User", "User")
-                        .WithMany("ParticipatedTasks")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -479,7 +507,7 @@ namespace TaskTracker.Infastructore.Migrations
                 {
                     b.HasOne("TaskTracker.Domain.Tems.Team", null)
                         .WithMany("Members")
-                        .HasForeignKey("TeamId1");
+                        .HasForeignKey("TeamId");
                 });
 
             modelBuilder.Entity("TaskTracker.Domain.TasksUser.Tasks", b =>
@@ -496,10 +524,6 @@ namespace TaskTracker.Infastructore.Migrations
 
             modelBuilder.Entity("TaskTracker.Domain.Users.User", b =>
                 {
-                    b.Navigation("ParticipatedTasks");
-
-                    b.Navigation("TaskComments");
-
                     b.Navigation("Tasks");
                 });
 #pragma warning restore 612, 618

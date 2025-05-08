@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <Folder Include="Teams\" />
-    <Folder Include="Users\Queries\" />
     <Folder Include="Users\Commands\" />
   </ItemGroup>
 
