@@ -54,7 +54,7 @@ public class UserRepository : IUserRepository
         var user = await _dbContext.DomainUsers.FirstOrDefaultAsync(us => us.IdentityUserId == id);
 
         if (user == null)
-            throw new UserAlreadyExists("the user was not found");
+            throw new UserNotFoundException("the user was not found");
 
         return user;
     }
