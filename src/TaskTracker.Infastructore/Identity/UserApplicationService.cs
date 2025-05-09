@@ -80,19 +80,33 @@ public class UserApplicationService : IUserApplicationService
 
     public async Task<UserDto> GetUserByIdAsync(string userId)
     {
-        var user = await _userManager.FindByIdAsync(userId)
-            ?? throw new Exception();
+        var user = await GetIdentityUser(userId);
 
         var userDto = new UserDto
         {
             Email = user.Email,
             FirstName = user.FirstName,
             LastName = user.LastName,
+            UserIdentityId= user.Id.ToString(),
         };
 
         return userDto;
     } 
 
+    public async Task RemoveUserAsync(string idnetityUserId)
+    {
+        var identityUser = await GetIdentityUser(idnetityUserId);
 
+        var deleteAction = await _userManager.DeleteAsync(identityUser);
+        if (!deleteAction.Succeeded)
+            throw new Exception("Не удалось удалить");
+    }
 
+    private async Task<ApplicationUser> GetIdentityUser(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId)
+            ?? throw new Exception();
+
+        return user;    
+    }
 }

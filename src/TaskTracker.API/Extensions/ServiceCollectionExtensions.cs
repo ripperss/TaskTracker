@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Reflection.Metadata;
-using TaskTracker.Application.Auth.Commands.Register;
+using System.Text;
 using TaskTracker.Application.Common.Interfaces;
 using TaskTracker.Infastructore.Auth;
 using TaskTracker.Infastructore.Common.Persistence;
@@ -36,7 +37,8 @@ public static class ServiceCollectionExtensions
     }
 
     public static WebApplicationBuilder AddSwagger(this WebApplicationBuilder builder)
-    {
+    {    
+
         builder.Services.AddSwaggerGen(option =>
         {
             option.SwaggerDoc("v1", new OpenApiInfo
@@ -48,7 +50,7 @@ public static class ServiceCollectionExtensions
             option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,
-                Description = "Please Enter a valid  token",
+                Description = "Введите JWT токен в формате: Bearer {токен}",
                 Name = "Authorization",
                 Type = SecuritySchemeType.Http,
                 BearerFormat = "JWT",
@@ -56,8 +58,19 @@ public static class ServiceCollectionExtensions
             });
 
             option.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
             {
-            });
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type=ReferenceType.SecurityScheme,
+                        Id="Bearer"
+                    }
+                },
+                new string[] {}
+            }
+        });
         });
 
         return builder;
@@ -73,6 +86,43 @@ public static class ServiceCollectionExtensions
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IUserApplicationService, UserApplicationService>();
         builder.Services.AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<TaskTrackerDbContext>());
+
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddBearerAuthorizetion(this WebApplicationBuilder builder, IConfiguration configuration)
+    {
+        var authSettings = configuration.GetSection(nameof(JwtSettings)).Get<JwtSettings>();
+
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+
+        }).AddJwtBearer(options =>
+        {
+            options.RequireHttpsMetadata = false;
+            options.SaveToken = true;
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.ASCII.GetBytes(authSettings.TokenPrivateKey)),
+                ValidateIssuer = false,
+                ValidateAudience = false
+            };
+        });
+
+        builder.Services.ConfigureApplicationCookie(options =>
+        {
+            options.Events.OnRedirectToLogin = context =>
+            {
+                context.Response.StatusCode = 401; 
+                return Task.CompletedTask;
+            };
+        });
+
+        builder.Services.AddAuthorization();
 
         return builder;
     }

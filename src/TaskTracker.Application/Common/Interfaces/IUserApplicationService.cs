@@ -14,4 +14,5 @@ public interface IUserApplicationService
     public Task<UserDto> GetUserByEmailAsync(string email);
     public Task EnsurePasswordIsCorrectAsync(string email, string inputPassword);
     public Task<UserDto> GetUserByIdAsync(string userId);
+    public Task RemoveUserAsync(string idnetityUserId);
 }
