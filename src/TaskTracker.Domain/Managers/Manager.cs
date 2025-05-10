@@ -10,10 +10,8 @@ namespace TaskTracker.Domain.Managers;
 public class Manager : Entity
 {   
     public Guid UserId { get; private set; }
-    public User User { get; private set; }
 
     public Guid TeamId { get; private set; }
-    public Team Team { get; private set; }
 
    public static Manager Create(User user, Team team)
     {
@@ -23,24 +21,11 @@ public class Manager : Entity
         var manager = new Manager()
         {
             UserId = user.Id,
-            TeamId = team.Id,
-            Team = team,
-            User = user
+            TeamId = team.Id
         };
 
         manager._domainEvents.Add(new ManagerCreatedEvent(user.Id, manager.Id, team.Id));
 
         return manager;
-    }
-
-    public void RemoveMemberOfTeams(User user)
-    {
-        if ((user.Role == Roles.Manager || user.TeamId != TeamId))
-            throw new NoPermissionException("Not");
-
-        user.LeaveTeam();
-
-        _domainEvents.Add(new UserRemovedFromTeamEvent(TeamId, user.Id,UserId));
-    }
-    
+    } 
 }

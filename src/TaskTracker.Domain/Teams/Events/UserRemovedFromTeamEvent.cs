@@ -11,12 +11,10 @@ public class UserRemovedFromTeamEvent : IDomainEvent
 {
     public Guid teamId { get; set; }
     public Guid userId { get; set; }
-    public Guid managerId { get; set; }
 
-    public UserRemovedFromTeamEvent(Guid teamId, Guid userId, Guid managerId)
+    public UserRemovedFromTeamEvent(Guid teamId, Guid userId)
     {
         this.teamId = teamId;
         this.userId = userId;
-        this.managerId = managerId;
     }
 }

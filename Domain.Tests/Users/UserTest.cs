@@ -6,14 +6,14 @@ using TaskTracker.Domain.Users.Event;
 
 namespace Domain.Tests.Users;
 
-sealed public class UserTest
+public sealed class UserTest
 {
     private readonly string _identityUserId = Guid.NewGuid().ToString();
-    
+
     [Fact]
-    public void CreateUser_WhenUserValid_ShouldNewUser()
+    public void CreateUser_WhenValid_ShouldReturnNewUser()
     {
-        // Arrage
+        // Arrange
         var userFactory = new CreateUserFactory();
 
         // Act
@@ -21,94 +21,112 @@ sealed public class UserTest
         var events = user.PopDomainEvents();
         var ev = events[0] as CreateUserEvent;
 
-        //Assert
+        // Assert
         user.Should().NotBeNull();
         user.Role.Should().Be(Roles.User);
         events.Should().HaveCount(1);
         ev.Should().NotBeNull();
         user.Id.Should().NotBeEmpty();
         user.IdentityUserId.Should().Be(_identityUserId);
-
     }
 
     [Fact]
-    public void CreateUser_WhenUserInValid_ShouldException()
+    public void CreateUser_WhenAdminRole_ShouldThrowException()
     {
-        // Arrage
+        // Arrange
         var userFactory = new CreateUserFactory();
 
         // Act
-        Action userAction = () => userFactory.CreateInvalidUser(_identityUserId);
+        Action action = () => userFactory.CreateInvalidUser(_identityUserId);
 
         // Assert
-        userAction.Should().Throw<NoPermissionException>()
-            .WithMessage("you cannot create a user with administrator rights");    
+        action.Should().Throw<NoPermissionException>()
+            .WithMessage("you cannot create a user with administrator rights");
     }
 
     [Fact]
-    public void CreateUserWithRoleManager_WhenUserValid_ShouldUser()
+    public void CreateUser_WithManagerRole_ShouldSucceed()
     {
-        // Arrage
+        // Arrange
         var userFactory = new CreateUserFactory();
 
         // Act
-        User user = userFactory.CreateUserWithRoleManager(_identityUserId);
+        var user = userFactory.CreateUserWithRoleManager(_identityUserId);
         var events = user.PopDomainEvents();
-        var ev = events[0] as CreateUserEvent;
 
-        user.Should().NotBeNull();
+        // Assert
         user.Role.Should().Be(Roles.Manager);
-        events.Should().HaveCount(1);
-        ev.Should().NotBeNull();
+        events.Should().ContainSingle(e => e is CreateUserEvent);
     }
 
     [Fact]
-    public void LeaveTem_WhenUserIsMemberOfTeam_SlouldEmpty()
+    public void AssignToTeam_WhenNotInTeam_ShouldSetTeamId()
     {
-        // Arrage 
-        CreateUserFactory createUserFactory = new CreateUserFactory();
-        var user = createUserFactory.CreateValidUser(_identityUserId);
-        user.AddTeam(Guid.NewGuid(), "ff");
+        // Arrange
+        var user = new CreateUserFactory().CreateValidUser(_identityUserId);
+        var teamId = Guid.NewGuid();
+
+        // Act
+        user.AddTeam(teamId);
+
+        // Assert
+        user.TeamId.Should().Be(teamId);
+    }
+
+    [Fact]
+    public void AssignToTeam_WhenAlreadyInTeam_ShouldThrowException()
+    {
+        // Arrange
+        var user = new CreateUserFactory().CreateValidUser(_identityUserId);
+        user.AddTeam(Guid.NewGuid());
+
+        // Act
+        Action action = () => user.AddTeam(Guid.NewGuid());
+
+        // Assert
+        action.Should().Throw<InvalidOperationException>()
+            .WithMessage("User is already in a team.");
+    }
+
+    [Fact]
+    public void LeaveTeam_WhenInTeam_ShouldClearTeamId()
+    {
+        // Arrange
+        var user = new CreateUserFactory().CreateValidUser(_identityUserId);
+        user.AddTeam(Guid.NewGuid());
 
         // Act
         user.LeaveTeam();
-        var events = user.PopDomainEvents();
 
         // Assert
-        user.TeamId.Should().Be(Guid.Empty);
-        events.Should().NotBeEmpty();
+        user.TeamId.Should().BeNull();
     }
 
     [Fact]
-    public void LeaveTem_WhenUserIsNotMembersOfTeam_ShouldException()
+    public void LeaveTeam_WhenNotInTeam_ShouldThrowException()
     {
-        // Arrage
-        var createUserFactory = new CreateUserFactory();
-        User user = createUserFactory.CreateValidUser(_identityUserId);
+        // Arrange
+        var user = new CreateUserFactory().CreateValidUser(_identityUserId);
 
         // Act
-        Action leaveTem = () => user.LeaveTeam();
+        Action action = () => user.LeaveTeam();
 
         // Assert
-        leaveTem.Should().Throw<Exception>().
-            WithMessage("the user is not a member of the team");
+        action.Should().Throw<Exception>()
+            .WithMessage("the user is not a member of the team");
     }
 
     [Fact]
-    public void Delete_WhenUserNotAdmin_ShouldEmpty()
+    public void Delete_WhenNotAdmin_ShouldRaiseDeleteEvent()
     {
-        // Arrage
-        var userFactory = new CreateUserFactory();
-        var user = userFactory.CreateValidUser(_identityUserId);
+        // Arrange
+        var user = new CreateUserFactory().CreateValidUser(_identityUserId);
 
         // Act
         user.Delete();
-        List<IDomainEvent> events = user.PopDomainEvents();
-        IDomainEvent @event = events[1] as DeleteUserEvent;
+        var events = user.PopDomainEvents();
 
         // Assert
-        events.Should().NotBeEmpty();
-        events.Should().HaveCount(2);
-        @event.Should().NotBeNull();
-    } 
+        events.Should().ContainSingle(e => e is DeleteUserEvent);
+    }
 }

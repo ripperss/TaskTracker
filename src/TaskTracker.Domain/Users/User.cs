@@ -39,21 +39,20 @@ public class User : Entity
 
     public void LeaveTeam()
     {
-        if (TeamId == Guid.Empty || TeamId == null)
+        if (TeamId == null)
         {
             throw new Exception("the user is not a member of the team");
         }
 
-        _domainEvents.Add(new UserLeftTeamEvent(Id, TeamId));
-
-        TeamId = Guid.Empty;
+        TeamId = null;
     }
 
-    public void AddTeam(Guid teamId, string teamPassword)
+    public void AddTeam(Guid teamId)
     {
-        TeamId = teamId;
-
-        _domainEvents.Add(new AddMembersOfTeamsEvent(this, teamId, teamPassword));
+        if (TeamId != null)
+            throw new InvalidOperationException("User is already in a team.");
+        
+        TeamId = teamId; 
     }
 
     public void Delete()

@@ -14,22 +14,30 @@ public class GetUserQueryHandler : IRequestHandler<GetUserQuery, UserDto>
 {
     private readonly IUserApplicationService _userApplicationService;
     private readonly ILogger<GetUserQueryHandler> _logger;
+    private readonly IUserRepository _userRepository;
 
     public GetUserQueryHandler(
         IUserApplicationService userApplicationService
-        , ILogger<GetUserQueryHandler> logger)
+        , ILogger<GetUserQueryHandler> logger,
+        IUserRepository userRepository)
     {
         _userApplicationService = userApplicationService;
         _logger = logger;
+        _userRepository = userRepository;
     }
 
     public async Task<UserDto> Handle(GetUserQuery request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Пытаюсь получить данные из Identity  ");
-        var user = await _userApplicationService.GetUserByIdAsync(request.ApplicatioUserId);
+        var userDto = await _userApplicationService.GetUserByIdAsync(request.ApplicatioUserId);
+
+         var user = await _userRepository.GetByIdentityIdAsync(userDto.UserIdentityId);
+
+        userDto.Role = user.Role;
+        userDto.TeamId = user.TeamId.ToString();
 
         _logger.LogInformation("получил  данные из Identity  ");
-        _logger.LogInformation($"{user.FirstName}");
-        return user;
+        _logger.LogInformation($"{userDto.FirstName}");
+        return userDto;
     }
 }

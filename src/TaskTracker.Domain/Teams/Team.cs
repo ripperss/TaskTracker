@@ -21,10 +21,13 @@ public class Team : Entity
     public static Team Create(string name,string teamPassword , User admin)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new NullReferenceException("Team name is required");
+            throw new ArgumentException("Team name is required");
+
+        if (string.IsNullOrWhiteSpace(teamPassword))
+            throw new ArgumentException("Team password is required", nameof(teamPassword));
 
         if (admin == null)
-            throw new NullReferenceException("Admin is required");
+            throw new ArgumentException("Admin is required");
 
         if (admin.Role != Roles.Manager)
             throw new NoPermissionException("Only users with the manager role can create teams.");
@@ -46,14 +49,12 @@ public class Team : Entity
 
     public void AddMember(User user, string teamPassword)
     {
-        if(_members.Contains(user))
-        {
-            return;
-        }
-
         AddValidateData(user, teamPassword);
 
+        user.AddTeam(Id);
         _members.Add(user);
+
+        _domainEvents.Add(new AddMembersOfTeamsEvent(user, Id));
     }
 
     public bool IsMember(Guid userId)
@@ -66,6 +67,9 @@ public class Team : Entity
         RemoveValidateData(Id, userToRemove);
 
         _members.Remove(userToRemove);
+        userToRemove.LeaveTeam();
+
+        _domainEvents.Add(new UserRemovedFromTeamEvent(Id, userToRemove.Id));
     }
 
     private void AddValidateData(User user, string teamPassword)

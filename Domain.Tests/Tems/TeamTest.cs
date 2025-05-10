@@ -1,6 +1,7 @@
 ﻿using Domain.Tests.Users;
 using FluentAssertions;
 using TaskTracker.Domain.Tems;
+using TaskTracker.Domain.Tems.Events;
 using TaskTracker.Domain.Tems.Exceptions;
 using TaskTracker.Domain.Users;
 
@@ -8,114 +9,109 @@ namespace Domain.Tests.Tems;
 
 public class TeamTest
 {
-    private readonly CreateUserFactory _createUserFactory = new CreateUserFactory();
+    private readonly CreateUserFactory _userFactory = new();
     private readonly string _identityUserId = Guid.NewGuid().ToString();
 
     [Theory]
-    [InlineData("ggg", "Ggg")]
-    [InlineData("Hrr", "Gg")]
-    public void CreateTeam_WithValidData_ShouldCreateTeam(string name, string teamPassword)
+    [InlineData("Dev Team", "secure123")]
+    [InlineData("QA Team", "test456")]
+    public void CreateTeam_WithValidData_ShouldSucceed(string name, string password)
     {
-        // Arrage 
-        var user = _createUserFactory.CreateUserWithRoleManager(_identityUserId);
-        
+        // Arrange
+        var manager = _userFactory.CreateUserWithRoleManager(_identityUserId);
+
         // Act
-        var team  = Team.Create(name, teamPassword, user);
+        var team = Team.Create(name, password, manager);
 
         // Assert
         team.Should().NotBeNull();
-        team.Id.Should().NotBeEmpty();
-
-
+        team.Name.Should().Be(name);
+        team.Members.Should().Contain(manager);
+        team.AdminId.Should().Be(manager.Id);
     }
 
     [Theory]
-    [InlineData("", "Ggg")]
-    [InlineData("", "")]
-    public void CreateTeam_WhenInvalidData_ShouldException(string name, string teamPassword)
+    [InlineData("", "pass123")]
+    [InlineData("Dev Team", "")]
+    [InlineData(null, "pass123")]
+    [InlineData("Dev Team", null)]
+    public void CreateTeam_WithInvalidData_ShouldThrowException(string name, string password)
     {
-        // Arrage
-        var user = _createUserFactory.CreateUserWithRoleManager(_identityUserId);
+        // Arrange
+        var manager = _userFactory.CreateUserWithRoleManager(_identityUserId);
 
-        // Act
-        var team = () => Team.Create(name, teamPassword, user);    
-
-        // Assert
-        team.Should().Throw<NullReferenceException>();
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => Team.Create(name, password, manager));
     }
 
     [Fact]
-    public void CreateTeam_WhenInCorrectRole_ShouldException()
+    public void CreateTeam_WithNonManagerUser_ShouldThrowException()
     {
-        // Arrage
-        var user = _createUserFactory.CreateValidUser(_identityUserId);
+        // Arrange
+        var user = _userFactory.CreateValidUser(_identityUserId);
 
-        // Act
-        var team = () => Team.Create("f", "f", user);
-
-        // Assert
-        team.Should().Throw<NoPermissionException>()
-            .WithMessage("Only users with the manager role can create teams.");
+        // Act & Assert
+        Assert.Throws<NoPermissionException>(() => Team.Create("Team", "pass", user));
     }
 
     [Fact]
-    public void AddMembers_WhenValidPassword_ShouldEmpty()
+    public void AddMember_WithCorrectPassword_ShouldAddUser()
     {
-        // Arrage
-        var user = _createUserFactory.CreateUserWithRoleManager(_identityUserId);
-        var team = Team.Create("name", "password", user);
+        // Arrange
+        var manager = _userFactory.CreateUserWithRoleManager(_identityUserId);
+        var team = Team.Create("Dev Team", "pass123", manager);
+        var user = _userFactory.CreateValidUser(Guid.NewGuid().ToString());
 
         // Act
-        team.AddMember(user, "password");
+        team.AddMember(user, "pass123");
+        var events = team.PopDomainEvents();
+        var @event = events[0] as AddMembersOfTeamsEvent;
 
         // Assert
-        team.Members.Should().HaveCount(1);
-        team.Members.Should().Contain(user);
+        team.Members.Should().HaveCount(2).And.Contain(user);
+        user.TeamId.Should().Be(team.Id);
+        @event.Should().NotBeNull();
     }
 
     [Fact]
-    public void AddMembers_WhenInValidPassword_ShouldException()
+    public void AddMember_WithIncorrectPassword_ShouldThrowException()
     {
-        // Arrage
-        var admin = _createUserFactory.CreateUserWithRoleManager(_identityUserId);
-        var team = Team.Create("name", "password", admin);
-        var user = _createUserFactory.CreateValidUser(_identityUserId);
+        // Arrange
+        var manager = _userFactory.CreateUserWithRoleManager(_identityUserId);
+        var team = Team.Create("Dev Team", "pass123", manager);
+        var user = _userFactory.CreateValidUser(Guid.NewGuid().ToString());
 
-        // Act
-        Action tramAddAction = () => team.AddMember(user, "InConrrectpassword");
-
-        // Assert
-        tramAddAction.Should().Throw<IncorrectPasswordExcepton>();
+        // Act & Assert
+        Assert.Throws<IncorrectPasswordExcepton>(() => team.AddMember(user, "wrongpass"));
     }
 
     [Fact]
-    public void RemoveMember_WhenValidData_ShouldEmpty()
+    public void RemoveMember_WhenValid_ShouldRemoveUser()
     {
-        // Arrage
-        var admin = _createUserFactory.CreateUserWithRoleManager(_identityUserId);
-        var team = Team.Create("name", "password", admin);
-        var user = _createUserFactory.CreateValidUser(_identityUserId);
-        team.AddMember(user, "password");
+        // Arrange
+        var manager = _userFactory.CreateUserWithRoleManager(_identityUserId);
+        var team = Team.Create("Dev Team", "pass123", manager);
+        var user = _userFactory.CreateValidUser(Guid.NewGuid().ToString());
+        team.AddMember(user, "pass123");
 
         // Act
         team.RemoveMember(user);
+        var events = team.PopDomainEvents();
+        var @event = events[0] as UserRemovedFromTeamEvent;
 
         // Assert
-        team.Members.Should().HaveCount(1);
-        team.Members.Should().Contain(admin);
+        team.Members.Should().NotContain(user);
+        user.TeamId.Should().BeNull();
     }
 
     [Fact]
-    public void RemoveMember_whenUsereQuealManager_ShouldException()
+    public void RemoveMember_WhenAdmin_ShouldThrowException()
     {
-        // Arrage
-        var admin = _createUserFactory.CreateUserWithRoleManager(_identityUserId);
-        var team = Team.Create("name", "password", admin);
+        // Arrange
+        var manager = _userFactory.CreateUserWithRoleManager(_identityUserId);
+        var team = Team.Create("Dev Team", "pass123", manager);
 
-        // Act
-        Action removeManagerAction = () => team.RemoveMember(admin);
-
-        // Assert
-        removeManagerAction.Should().Throw<NoPermissionException>("No permission to remove this user");
+        // Act & Assert
+        Assert.Throws<NoPermissionException>(() => team.RemoveMember(manager));
     }
 }
