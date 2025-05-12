@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TaskTracker.Application.Users.Commands.Remove;
 using TaskTracker.Application.Users.Queries.GetUser;
+using TaskTracker.Application.Users.Queries.GetUsers;
 
 namespace TaskTracker.API.Controllers;
 
@@ -45,10 +46,14 @@ public class AccountController : ControllerBase
         return Ok(user);
     }
 
-    [HttpGet]
+    [HttpGet("accounts")]
     public async Task<IActionResult> GetAllUserAsync()
     {
-        return Ok();
+        var getUsersQuery = new GetUsersQuery();
+
+        var users = await _mediator.Send(getUsersQuery);
+
+        return Ok(users);
     }
 
     [HttpDelete]

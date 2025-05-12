@@ -67,7 +67,7 @@ public sealed class UserTest
         var teamId = Guid.NewGuid();
 
         // Act
-        user.AddTeam(teamId);
+        user.JoinTeam(teamId);
 
         // Assert
         user.TeamId.Should().Be(teamId);
@@ -78,10 +78,10 @@ public sealed class UserTest
     {
         // Arrange
         var user = new CreateUserFactory().CreateValidUser(_identityUserId);
-        user.AddTeam(Guid.NewGuid());
+        user.JoinTeam(Guid.NewGuid());
 
         // Act
-        Action action = () => user.AddTeam(Guid.NewGuid());
+        Action action = () => user.JoinTeam(Guid.NewGuid());
 
         // Assert
         action.Should().Throw<InvalidOperationException>()
@@ -93,7 +93,7 @@ public sealed class UserTest
     {
         // Arrange
         var user = new CreateUserFactory().CreateValidUser(_identityUserId);
-        user.AddTeam(Guid.NewGuid());
+        user.JoinTeam(Guid.NewGuid());
 
         // Act
         user.LeaveTeam();

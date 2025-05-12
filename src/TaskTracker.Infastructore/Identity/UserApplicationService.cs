@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using TaskTracker.Application.Auth.Commands.Register;
 using TaskTracker.Application.Common.Interfaces;
 using TaskTracker.Application.Common.Models;
@@ -100,6 +101,21 @@ public class UserApplicationService : IUserApplicationService
         var deleteAction = await _userManager.DeleteAsync(identityUser);
         if (!deleteAction.Succeeded)
             throw new Exception("Не удалось удалить");
+    }
+
+    public async Task<List<UserDto>> GetUsersAsync()
+    {
+        var identityUsers = await _userManager.Users.ToListAsync(); 
+
+        var users = identityUsers.Select(identityUser => new UserDto
+        {
+            Email = identityUser.Email,
+            FirstName = identityUser.FirstName,
+            LastName = identityUser.LastName,
+            UserIdentityId = identityUser.Id.ToString(),
+        }).ToList();
+
+        return users;
     }
 
     private async Task<ApplicationUser> GetIdentityUser(string userId)

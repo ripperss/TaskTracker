@@ -1,5 +1,5 @@
-﻿using System.Net.NetworkInformation;
-using TaskTracker.Domain.Common;
+﻿using TaskTracker.Domain.Common;
+using TaskTracker.Domain.Managers;
 using TaskTracker.Domain.TaskComments;
 using TaskTracker.Domain.TaskParticipants;
 using TaskTracker.Domain.Tems;
@@ -15,14 +15,14 @@ public class Tasks : Entity
     public string Title { get; private set; }
     public string Description { get; private set; }
     public Status Status { get; private set; } 
-    public Guid? UserId { get; private set; } 
+    public Guid? ManagerId { get; private set; } 
     public Guid TeamId { get; private set; } 
     public DateTime CreatedAt { get; private set; }
 
     public IReadOnlyCollection<TaskComment> Comments => _comments.AsReadOnly();
     public IReadOnlyCollection<TaskParticipant> Participants => _participants.AsReadOnly();
 
-    public static Tasks Create(string title, string description, User creator)
+    public static Tasks Create(string title, string description, Manager creator)
     {
         if (string.IsNullOrWhiteSpace(title))
             throw new Exception("Title is required");
@@ -34,7 +34,7 @@ public class Tasks : Entity
             Status = Status.News,
             CreatedAt = DateTime.UtcNow,
             Id = Guid.NewGuid(),
-            UserId = creator.Id,
+            ManagerId = creator.Id,
         };
     }
 

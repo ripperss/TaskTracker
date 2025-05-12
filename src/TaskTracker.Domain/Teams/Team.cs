@@ -51,7 +51,7 @@ public class Team : Entity
     {
         AddValidateData(user, teamPassword);
 
-        user.AddTeam(Id);
+        user.JoinTeam(Id);
         _members.Add(user);
 
         _domainEvents.Add(new AddMembersOfTeamsEvent(user, Id));

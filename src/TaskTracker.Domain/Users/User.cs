@@ -1,6 +1,4 @@
 ﻿using TaskTracker.Domain.Common;
-using TaskTracker.Domain.TasksUser;
-using TaskTracker.Domain.Tems.Events;
 using TaskTracker.Domain.Tems.Exceptions;
 using TaskTracker.Domain.Users.Event;
 
@@ -12,8 +10,6 @@ public class User : Entity
     public Guid? TeamId { get; private set; }
     public string IdentityUserId { get; private set; }
     public DateTime CreatedAt { get; private init; }
-
-    public List<Tasks> Tasks { get; set; } = new List<Tasks>();
 
     protected User() { }
 
@@ -47,7 +43,7 @@ public class User : Entity
         TeamId = null;
     }
 
-    public void AddTeam(Guid teamId)
+    public void JoinTeam(Guid teamId)
     {
         if (TeamId != null)
             throw new InvalidOperationException("User is already in a team.");
