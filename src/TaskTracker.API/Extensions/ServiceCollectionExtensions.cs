@@ -9,6 +9,8 @@ using TaskTracker.Application.Common.Interfaces;
 using TaskTracker.Infastructore.Auth;
 using TaskTracker.Infastructore.Common.Persistence;
 using TaskTracker.Infastructore.Identity;
+using TaskTracker.Infastructore.Managers;
+using TaskTracker.Infastructore.Teams;
 using TaskTracker.Infastructore.Users;
 
 namespace TaskTracker.API.Extensions;
@@ -87,6 +89,8 @@ public static class ServiceCollectionExtensions
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IUserApplicationService, UserApplicationService>();
         builder.Services.AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<TaskTrackerDbContext>());
+        builder.Services.AddScoped<ITeamRepositoty, TeamRepositoty>();
+        builder.Services.AddScoped<IManagerRepository, ManagerRepository>();
 
         builder.Services.AddValidatorsFromAssemblyContaining(typeof(Application.AssemblyReference));
 
