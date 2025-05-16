@@ -13,6 +13,9 @@ public class Manager : Entity
     public Guid UserId { get; private set; }
     public Guid TeamId { get; private set; }
 
+    public User User { get; private set; }
+    public Team Team { get; private set; }
+
     private readonly List<Tasks> _tasks = new();
     public IReadOnlyCollection<Tasks> Tasks => _tasks.AsReadOnly();
 
@@ -24,7 +27,9 @@ public class Manager : Entity
         var manager = new Manager()
         {
             UserId = user.Id,
-            TeamId = team.Id
+            TeamId = team.Id,
+            Team = team,
+            User = user
         };
 
         manager._domainEvents.Add(new ManagerCreatedEvent(user.Id, manager.Id, team.Id));

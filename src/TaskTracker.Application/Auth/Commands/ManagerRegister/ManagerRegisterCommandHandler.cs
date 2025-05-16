@@ -65,7 +65,7 @@ public class ManagerRegisterCommandHandler : IRequestHandler<ManagerRegisterComm
             UserIdentityId = user.IdentityUserId,
             Role = user.Role,
             TeamName = request.TeamName,
-            TeamId = team.Id          
+            TeamId = team.Id       
         };
     }
 }
