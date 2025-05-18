@@ -11,7 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IJwtValidatorService, JwtValidatorService>();
 
 builder.AddData(builder.Configuration)
     .AddSwagger()

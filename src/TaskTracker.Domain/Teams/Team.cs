@@ -1,5 +1,4 @@
 ﻿using TaskTracker.Domain.Common;
-using TaskTracker.Domain.Managers;
 using TaskTracker.Domain.Tems.Events;
 using TaskTracker.Domain.Tems.Exceptions;
 using TaskTracker.Domain.Users;

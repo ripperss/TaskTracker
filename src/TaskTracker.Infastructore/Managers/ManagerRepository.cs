@@ -34,9 +34,16 @@ public class ManagerRepository : IManagerRepository
     {
         var manager = await _dbContext
             .Managers
+            .Include(t => t.Team)
+            .Include(u => u.User)
             .FirstOrDefaultAsync(mngr => mngr.User.IdentityUserId == identityId)
                 ?? throw new UserNotFoundException("manager notFound");
 
         return manager;    
+    }
+
+    public void UpdateManager(Manager manager)
+    {
+        _dbContext.Update(manager);
     }
 }

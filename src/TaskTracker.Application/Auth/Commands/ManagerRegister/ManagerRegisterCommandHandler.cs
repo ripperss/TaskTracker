@@ -56,6 +56,7 @@ public class ManagerRegisterCommandHandler : IRequestHandler<ManagerRegisterComm
         await _managerRepository.AddManager(manager);
 
         await _unitOfWork.CommitChangesAsync();
+        _teamRepositoty.UpdateTeam(team);
 
         return new ManagerDto()
         {

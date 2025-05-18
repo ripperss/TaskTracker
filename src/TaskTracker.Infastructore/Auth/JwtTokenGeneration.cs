@@ -48,7 +48,8 @@ public class JwtTokenGeneration : IJwtTokenGeneration
         var claims = new List<Claim>()
         {
             new Claim(ClaimTypes.NameIdentifier, user.IdentityUserId.ToString()),
-            new Claim(ClaimTypes.Role, user.Role.ToString())
+            new Claim(ClaimTypes.Role, user.Role.ToString()),
+            new Claim("TeamId", user.TeamId.ToString() ?? "")
         };
 
         return new ClaimsIdentity(claims);
