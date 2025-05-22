@@ -17,7 +17,8 @@ builder.AddData(builder.Configuration)
     .AddSwagger()
     .Auth()
     .AddApplicationLayer()
-    .AddBearerAuthorizetion(builder.Configuration);
+    .AddBearerAuthorizetion(builder.Configuration)
+    .AddSerialog();
 
 var app = builder.Build();
 
