@@ -9,14 +9,14 @@ namespace TaskTracker.API.Controllers;
 [Route("manager")]
 public class ManagerController : ControllerBase
 {
-    private readonly IUserService _userService;
+    private readonly IJwtValidatorService _jwtValidatorService;
     private readonly IMediator _mediator;
 
     public ManagerController(
-        IUserService userService
+        IJwtValidatorService jwtValidatorService
         , IMediator mediator)
     {
-        _userService = userService;
+        _jwtValidatorService = jwtValidatorService;
         _mediator = mediator;
     }
 

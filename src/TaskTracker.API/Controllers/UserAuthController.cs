@@ -14,10 +14,12 @@ namespace TaskTracker.API.Controllers;
 public class UserAuthController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly ILogger<UserAuthController> _logger;
 
-    public UserAuthController(IMediator mediator)
+    public UserAuthController(IMediator mediator, ILogger<UserAuthController> logger)
     {
         _mediator = mediator;
+        _logger = logger;
     }
 
     [HttpPost("reg")]
@@ -36,6 +38,8 @@ public class UserAuthController : ControllerBase
     [HttpPost("log")]
     public async Task<IActionResult> LoginAsync(UserLoginDto loginDto)
     {
+        _logger.LogInformation(" авторизция с {loginDto}", loginDto);
+
         var commnad = new LoginCommand(loginDto.Email, loginDto.Password);
 
         var loginUser = await _mediator.Send(commnad);

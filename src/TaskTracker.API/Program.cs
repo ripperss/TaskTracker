@@ -11,13 +11,14 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IJwtValidatorService, JwtValidatorService>();
 
 builder.AddData(builder.Configuration)
     .AddSwagger()
     .Auth()
     .AddApplicationLayer()
-    .AddBearerAuthorizetion(builder.Configuration);
+    .AddBearerAuthorizetion(builder.Configuration)
+    .AddSerialog();
 
 var app = builder.Build();
 

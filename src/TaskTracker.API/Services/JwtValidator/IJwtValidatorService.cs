@@ -1,6 +1,7 @@
 ﻿namespace TaskTracker.API.Services.UserServices;
 
-public interface IUserService
+public interface IJwtValidatorService
 {
     public string GetUserIdentityId();
+    public string GetTeamId();
 }

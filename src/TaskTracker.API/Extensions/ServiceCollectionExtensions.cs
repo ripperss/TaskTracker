@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using System.Data.Entity.Core.Common.CommandTrees;
 using System.Text;
 using TaskTracker.Application.Common.Interfaces;
 using TaskTracker.Infastructore.Auth;
@@ -130,6 +132,20 @@ public static class ServiceCollectionExtensions
         });
 
         builder.Services.AddAuthorization();
+
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddSerialog(this WebApplicationBuilder builder)
+    {
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
+            .Enrich.FromLogContext()
+            .MinimumLevel.Information()
+            .CreateLogger();
+
+        builder.Host.UseSerilog();
 
         return builder;
     }
