@@ -35,4 +35,8 @@
     <ProjectReference Include="..\TaskTracker.Infastructore\TaskTracker.Infastructore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\" />
+  </ItemGroup>
+
 </Project>

@@ -25,15 +25,24 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, List<UserDto>
     {
         _logger.LogInformation("try get users");
 
-        var users = await _userApplicationService.GetUsersAsync();
+        var applicationUsers = await _userApplicationService.GetUsersAsync();
+        var users = await _userRepository.GetAllAsync();
 
-        foreach (var userDto in users)
-        {
-            var user = await _userRepository.GetByIdentityIdAsync(userDto.UserIdentityId);
-            userDto.Role = user.Role;
-            userDto.TeamId = user.TeamId.ToString();
-        }
+        var usersDto = (from appUser in applicationUsers
+                        join user in users
+                        on appUser.UserIdentityId equals user.IdentityUserId
+                        select new UserDto
+                        {
+                            FirstName = appUser.FirstName,
+                            LastName = appUser.LastName,
+                            Email = appUser.Email,
+                            UserIdentityId = appUser.UserIdentityId,
+                            Role = user.Role,
+                            TeamId = user.TeamId?.ToString(),
+                            ImagePath = appUser.ImagePath
+                        })
+                        .ToList();
 
-        return users;
+        return usersDto;
     }
 }

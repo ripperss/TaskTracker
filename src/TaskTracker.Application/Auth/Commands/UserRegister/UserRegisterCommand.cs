@@ -12,4 +12,5 @@ public record UserRegisterCommand(
     string FirstName
     , string LastName
     , string Email
-    , string Password) : IRequest<UserResponseRegisterDto>;
+    , string Password
+    , string ImageBase64) : IRequest<UserDto>;

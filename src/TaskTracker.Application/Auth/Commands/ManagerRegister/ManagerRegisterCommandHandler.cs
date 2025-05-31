@@ -17,6 +17,7 @@ public class ManagerRegisterCommandHandler : IRequestHandler<ManagerRegisterComm
     private readonly IManagerRepository _managerRepository;
     private readonly IUserRepository _userRepository;
     private readonly IUserApplicationService _userApplicationService;
+    private readonly IImageService _imageService;
 
     public ManagerRegisterCommandHandler(
           IUnitOfWork unitOfWork
@@ -24,7 +25,8 @@ public class ManagerRegisterCommandHandler : IRequestHandler<ManagerRegisterComm
         ITeamRepositoty teamRepositoty,
         IManagerRepository managerRepository
         , IUserRepository userRepository
-        , IUserApplicationService userApplicationService)
+        , IUserApplicationService userApplicationService,
+        IImageService imageService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -32,19 +34,26 @@ public class ManagerRegisterCommandHandler : IRequestHandler<ManagerRegisterComm
         _managerRepository = managerRepository;
         _userRepository = userRepository;
         _userApplicationService = userApplicationService;
+        _imageService = imageService;
+        _imageService = imageService;
     }
 
     public async Task<ManagerDto> Handle(ManagerRegisterCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("регистрация пользователя c ролью manager");
 
-        var userRegisterCommand = new UserRegisterCommand(
-            request.FirstName
-            , request.LastName
-            , request.Email
-            , request.Password);
+        var imagePath = await _imageService.AploadImage(request.ImageBase64);
 
-        var identityUser = await _userApplicationService.RegisterAsync(userRegisterCommand);
+        var userDto = new UserRegisterDto()
+        {
+            ImagePath = imagePath,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Email = request.Email,
+            Password = request.Password,
+        };
+
+        var identityUser = await _userApplicationService.RegisterAsync(userDto);
 
         var user = User.Create(identityUser.UserIdentityId, Roles.Manager);
         await _userRepository.CreateUserAsync(user);
@@ -66,7 +75,8 @@ public class ManagerRegisterCommandHandler : IRequestHandler<ManagerRegisterComm
             UserIdentityId = user.IdentityUserId,
             Role = user.Role,
             TeamName = request.TeamName,
-            TeamId = team.Id       
+            TeamId = team.Id,
+            ImagePath = imagePath,
         };
     }
 }

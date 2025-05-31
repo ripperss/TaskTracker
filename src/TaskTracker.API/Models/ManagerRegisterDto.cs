@@ -10,4 +10,5 @@ public class ManagerRegisterDto
     public string? TeamName { get; set; }
     public string? Password { get; set; }
     public string? TeamPassword { get; set; }
+    public string ImageBase64 { get; set; }
 }

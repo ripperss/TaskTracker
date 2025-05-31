@@ -28,7 +28,8 @@ public class UserAuthController : ControllerBase
         var commnad = new UserRegisterCommand(user.FirstName
             , user.LastName
             , user.Email
-            , user.Password);
+            , user.Password
+            , user.ImageBase64);
 
         var registeUser = await _mediator.Send(commnad);
 
