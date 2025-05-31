@@ -17,6 +17,7 @@ public class ManagerRegisterCommandHandler : IRequestHandler<ManagerRegisterComm
     private readonly IManagerRepository _managerRepository;
     private readonly IUserRepository _userRepository;
     private readonly IUserApplicationService _userApplicationService;
+    private readonly IImageService _imageService;
 
     public ManagerRegisterCommandHandler(
           IUnitOfWork unitOfWork
@@ -24,7 +25,8 @@ public class ManagerRegisterCommandHandler : IRequestHandler<ManagerRegisterComm
         ITeamRepositoty teamRepositoty,
         IManagerRepository managerRepository
         , IUserRepository userRepository
-        , IUserApplicationService userApplicationService)
+        , IUserApplicationService userApplicationService,
+        IImageService imageService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -32,6 +34,8 @@ public class ManagerRegisterCommandHandler : IRequestHandler<ManagerRegisterComm
         _managerRepository = managerRepository;
         _userRepository = userRepository;
         _userApplicationService = userApplicationService;
+        _imageService = imageService;
+        _imageService = imageService;
     }
 
     public async Task<ManagerDto> Handle(ManagerRegisterCommand request, CancellationToken cancellationToken)
@@ -42,7 +46,8 @@ public class ManagerRegisterCommandHandler : IRequestHandler<ManagerRegisterComm
             request.FirstName
             , request.LastName
             , request.Email
-            , request.Password);
+            , request.Password
+            , request.ImageBase64);
 
         var identityUser = await _userApplicationService.RegisterAsync(userRegisterCommand);
 

@@ -15,6 +15,7 @@ public record ManagerRegisterCommand(
     , string Password
     , string TeamName
     , string TeamPassword
+    , string ImageBase64
     ) : IRequest<ManagerDto>
 {
 }

@@ -25,7 +25,8 @@ public class ManagerRegisterController : ControllerBase
             , dto.Email!
             , dto.Password!
             , dto.TeamName!
-            , dto.TeamPassword!);
+            , dto.TeamPassword!
+            , dto.ImageBase64);
 
         var result =  await _mediator.Send(managerCommnad);
 
