@@ -6,7 +6,7 @@ using TaskTracker.Domain.Users;
 
 namespace TaskTracker.Application.Auth.Commands.Register;
 
-public class UserRegisterCommandHandler : IRequestHandler<UserRegisterCommand, UserResponseRegisterDto>
+public class UserRegisterCommandHandler : IRequestHandler<UserRegisterCommand, UserDto>
 {
     private readonly IUserRepository _userRepository;
     private readonly IUserApplicationService _userApplicationService;
@@ -28,13 +28,23 @@ public class UserRegisterCommandHandler : IRequestHandler<UserRegisterCommand, U
         _imageService = imageService;
     }
     
-    public async Task<UserResponseRegisterDto> Handle(UserRegisterCommand request, CancellationToken cancellationToken)
+    public async Task<UserDto> Handle(UserRegisterCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("регистрация пользователя");
-        var identityUser = await _userApplicationService.RegisterAsync(request);
-        identityUser.Role = Roles.User;
 
         var imagePath = await _imageService.AploadImage(request.ImageBase64);
+
+        var userDto = new UserRegisterDto()
+        {
+            ImagePath = imagePath,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Email = request.Email,
+            Password = request.Password, 
+        };
+
+        var identityUser = await _userApplicationService.RegisterAsync(userDto);
+        identityUser.Role = Roles.User;
         identityUser.ImagePath = imagePath;
 
         var user = User.Create(identityUser.UserIdentityId, Roles.User);

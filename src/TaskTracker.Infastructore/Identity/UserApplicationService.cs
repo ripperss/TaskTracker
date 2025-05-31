@@ -17,7 +17,7 @@ public class UserApplicationService : IUserApplicationService
         _userManager = userManager;
     }
 
-    public async Task<UserResponseRegisterDto> RegisterAsync(UserRegisterCommand dto)
+    public async Task<UserDto> RegisterAsync(UserRegisterDto dto)
     {
         var findUserByEmail = await _userManager.FindByEmailAsync(dto.Email);
         var findUserByName = await _userManager.FindByNameAsync(dto.FirstName);
@@ -30,7 +30,8 @@ public class UserApplicationService : IUserApplicationService
             UserName = dto.Email,
             Email = dto.Email,
             FirstName = dto.FirstName,
-            LastName = dto.LastName
+            LastName = dto.LastName,
+            imagePath = dto.ImagePath,
         };
 
         var result = await _userManager.CreateAsync(user, dto.Password);
@@ -40,7 +41,7 @@ public class UserApplicationService : IUserApplicationService
             throw new Exception($"Registration failed: {errors}");
         }
 
-        return new UserResponseRegisterDto
+        return new UserDto
         {
             UserIdentityId = user.Id.ToString(),
             Email = user.Email,
@@ -60,6 +61,7 @@ public class UserApplicationService : IUserApplicationService
             FirstName = user.FirstName,
             LastName = user.LastName,
             UserIdentityId = user.Id.ToString(),
+            ImagePath = user.imagePath
 
         };
 
@@ -89,6 +91,7 @@ public class UserApplicationService : IUserApplicationService
             FirstName = user.FirstName,
             LastName = user.LastName,
             UserIdentityId= user.Id.ToString(),
+            ImagePath = user.imagePath
         };
 
         return userDto;
@@ -113,6 +116,7 @@ public class UserApplicationService : IUserApplicationService
             FirstName = identityUser.FirstName,
             LastName = identityUser.LastName,
             UserIdentityId = identityUser.Id.ToString(),
+            ImagePath = identityUser.imagePath
         }).ToList();
 
         return users;

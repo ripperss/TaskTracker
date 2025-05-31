@@ -17,4 +17,5 @@ public class ManagerDto
     public Roles? Role { get; set; }
     public string? TeamName { get; set; }
     public Guid? TeamId { get; set; }
+    public string ImagePath { get; set; }
 }

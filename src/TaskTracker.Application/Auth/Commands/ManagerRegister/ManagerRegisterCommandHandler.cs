@@ -42,14 +42,18 @@ public class ManagerRegisterCommandHandler : IRequestHandler<ManagerRegisterComm
     {
         _logger.LogInformation("регистрация пользователя c ролью manager");
 
-        var userRegisterCommand = new UserRegisterCommand(
-            request.FirstName
-            , request.LastName
-            , request.Email
-            , request.Password
-            , request.ImageBase64);
+        var imagePath = await _imageService.AploadImage(request.ImageBase64);
 
-        var identityUser = await _userApplicationService.RegisterAsync(userRegisterCommand);
+        var userDto = new UserRegisterDto()
+        {
+            ImagePath = imagePath,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Email = request.Email,
+            Password = request.Password,
+        };
+
+        var identityUser = await _userApplicationService.RegisterAsync(userDto);
 
         var user = User.Create(identityUser.UserIdentityId, Roles.Manager);
         await _userRepository.CreateUserAsync(user);
@@ -71,7 +75,8 @@ public class ManagerRegisterCommandHandler : IRequestHandler<ManagerRegisterComm
             UserIdentityId = user.IdentityUserId,
             Role = user.Role,
             TeamName = request.TeamName,
-            TeamId = team.Id       
+            TeamId = team.Id,
+            ImagePath = imagePath,
         };
     }
 }

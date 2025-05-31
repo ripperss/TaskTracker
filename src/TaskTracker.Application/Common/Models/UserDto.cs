@@ -15,4 +15,5 @@ public class UserDto
     public string UserIdentityId { get; set; }
     public Roles? Role {  get; set; }
     public string? TeamId { get; set; }
+    public string ImagePath { get; set; }
 }
