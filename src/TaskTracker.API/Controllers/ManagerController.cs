@@ -6,7 +6,7 @@ using TaskTracker.Application.Managers.Queries.GetManager;
 namespace TaskTracker.API.Controllers;
 
 [ApiController]
-[Route("manager")]
+[Route("managers")]
 public class ManagerController : ControllerBase
 {
     private readonly IJwtValidatorService _jwtValidatorService;

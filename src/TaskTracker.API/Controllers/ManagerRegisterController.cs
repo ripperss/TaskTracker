@@ -6,7 +6,7 @@ using TaskTracker.Application.Auth.Commands.ManagerRegister;
 namespace TaskTracker.API.Controllers;
 
 [ApiController]
-[Route("maangerReg")]
+[Route("maangersReg")]
 public class ManagerRegisterController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -16,7 +16,7 @@ public class ManagerRegisterController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpPost]
+    [HttpPost("reg")]
     public async Task<IActionResult> Register(ManagerRegisterDto dto)
     {
         var managerCommnad = new ManagerRegisterCommand(

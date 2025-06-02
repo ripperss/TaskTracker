@@ -10,7 +10,7 @@ using TaskTracker.Application.Teams.Queries;
 namespace TaskTracker.API.Controllers;
 
 [ApiController]
-[Route("Team")]
+[Route("teams")]
 public class TeamController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -32,7 +32,8 @@ public class TeamController : ControllerBase
         return Ok(team);
     }
 
-    [HttpGet("MyTeam")]
+    [HttpGet("me")]
+    [Authorize]
     public async Task<IActionResult> GetMyTeam()
     {
         var teamId = _jwtValidatorService.GetTeamId();
@@ -45,7 +46,7 @@ public class TeamController : ControllerBase
     }
 
     [Authorize]
-    [HttpPost("add_member")]
+    [HttpPost("members")]
     public async Task<IActionResult> AddMemberAsync(AddMemberDto dto)
     {
         var userId = _jwtValidatorService.GetUserIdentityId();
@@ -57,8 +58,8 @@ public class TeamController : ControllerBase
     }
 
     [Authorize]
-    [HttpDelete]
-    public async Task<IActionResult> RemoveMemberAsync()
+    [HttpDelete("me/members")]
+    public async Task<IActionResult> LeaveTeamAsync()
     {
         var userId = _jwtValidatorService.GetUserIdentityId();
         var teamId = _jwtValidatorService.GetTeamId();
@@ -67,6 +68,6 @@ public class TeamController : ControllerBase
 
         await _mediator.Send(commnad);
 
-        return NotFound();
+        return NoContent();
     }
 }

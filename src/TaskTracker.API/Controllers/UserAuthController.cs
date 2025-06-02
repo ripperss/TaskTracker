@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskTracker.API.Models;
 using TaskTracker.Application.Auth.Commands.Login;
@@ -9,7 +8,7 @@ using TaskTracker.Application.Common.Models;
 namespace TaskTracker.API.Controllers;
 
 [ApiController]
-[Route("Auth")]
+[Route("auth")]
 
 public class UserAuthController : ControllerBase
 {
