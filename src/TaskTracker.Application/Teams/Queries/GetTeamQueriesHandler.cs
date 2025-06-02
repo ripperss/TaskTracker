@@ -21,19 +21,17 @@ public class GetTeamQueriesHandler : IRequestHandler<GetTeamQueries, TeamDto>
     {
         var team = await _teamRepositoty.GetTeamById(request.teamId);
 
-        var usersWithIdentity = await Task.WhenAll(team.Members.Select(async user =>
+        var members = await _userApplicationService
+            .GetIdentityUsersByIds(team.Members.Select(user => user.IdentityUserId));
+
+        members.ForEach(user =>
         {
-            var identityUser = await _userApplicationService.GetUserByIdAsync(user.IdentityUserId);
-            return new UserDto
-            {
-                UserIdentityId = user.IdentityUserId,
-                Role = user.Role,
-                TeamId = request.teamId,
-                FirstName = identityUser.FirstName,
-                LastName = identityUser.LastName,
-                Email = identityUser.Email
-            };
-        }));
+            var member = team.Members.First(m => m.IdentityUserId == user.UserIdentityId);
+            
+            user.Role = member.Role;
+            user.TeamId = member.TeamId.ToString();
+
+        });
 
         return new TeamDto
         {
@@ -41,8 +39,9 @@ public class GetTeamQueriesHandler : IRequestHandler<GetTeamQueries, TeamDto>
             Name = team.Name,
             AdminId = team.AdminId,
             CreatedAt = team.CreatedAt,
-            Members = usersWithIdentity.ToList()
+            Members = members,
         };
     }
 }
+
 

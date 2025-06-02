@@ -8,7 +8,7 @@ using TaskTracker.Application.Users.Queries.GetUsers;
 
 namespace TaskTracker.API.Controllers;
 
-[Route("account")]
+[Route("accounts")]
 [ApiController]
 public class AccountController : ControllerBase
 {
@@ -23,7 +23,7 @@ public class AccountController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet("GetMy")]
+    [HttpGet("me")]
     [Authorize]
     public async Task<IActionResult> GetMyAsync()
     {
@@ -46,7 +46,7 @@ public class AccountController : ControllerBase
         return Ok(user);
     }
 
-    [HttpGet("accounts")]
+    [HttpGet]
     public async Task<IActionResult> GetAllUserAsync()
     {
         var getUsersQuery = new GetUsersQuery();
@@ -56,7 +56,7 @@ public class AccountController : ControllerBase
         return Ok(users);
     }
 
-    [HttpDelete]
+    [HttpDelete("{userId}")]
     public async Task<IActionResult> RemoveUserAsync(string userId)
     {
         var command = new RemoveCommand(userId);

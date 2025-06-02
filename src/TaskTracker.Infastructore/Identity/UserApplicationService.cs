@@ -4,6 +4,7 @@ using TaskTracker.Application.Auth.Commands.Register;
 using TaskTracker.Application.Common.Interfaces;
 using TaskTracker.Application.Common.Models;
 using TaskTracker.Domain.Tems.Exceptions;
+using TaskTracker.Domain.Users;
 using TaskTracker.Infastructore.Exceptions;
 
 namespace TaskTracker.Infastructore.Identity;
@@ -122,6 +123,25 @@ public class UserApplicationService : IUserApplicationService
         return users;
     }
 
+    public async Task<List<UserDto>> GetIdentityUsersByIds(IEnumerable<string> userIds)
+    {
+        var identityUsers = await _userManager.Users
+            .Where(u => userIds.Contains(u.Id.ToString()))
+            .ToListAsync();
+
+        var users = identityUsers.Select(identityUser => new UserDto
+        {
+            Email = identityUser.Email,
+            FirstName = identityUser.FirstName,
+            LastName = identityUser.LastName,
+            UserIdentityId = identityUser.Id.ToString(),
+            ImagePath = identityUser.imagePath
+        })
+        .ToList();
+
+        return users;
+    }
+
     private async Task<ApplicationUser> GetIdentityUser(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId)
@@ -129,4 +149,5 @@ public class UserApplicationService : IUserApplicationService
 
         return user;    
     }
+
 }

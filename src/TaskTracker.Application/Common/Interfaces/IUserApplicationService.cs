@@ -16,4 +16,5 @@ public interface IUserApplicationService
     public Task<UserDto> GetUserByIdAsync(string userId);
     public Task RemoveUserAsync(string idnetityUserId);
     public Task<List<UserDto>> GetUsersAsync();
+    public Task<List<UserDto>> GetIdentityUsersByIds(IEnumerable<string> userIds);
 }
