@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Auth\Command\" />
     <Folder Include="Users\Command\" />
   </ItemGroup>
 

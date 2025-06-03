@@ -40,5 +40,22 @@ public class Manager : Entity
     public void AddTask(Tasks task)
     {
         _tasks.Add(task);
+
+        _domainEvents.Add(new AddTaskEvent()
+        {
+            TaskId = task.Id,
+            TeamId = Team.Id,
+        });
+    }
+
+    public void DeleteTask(Tasks task)
+    {
+        _tasks.Remove(task);
+
+        _domainEvents.Add(new RemoveTaskEvent()
+        {
+            TaskId = task.Id,
+            TeamId = Team.Id 
+        });
     }
 }
